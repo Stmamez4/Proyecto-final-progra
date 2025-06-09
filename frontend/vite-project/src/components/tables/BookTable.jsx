@@ -1,103 +1,95 @@
+import React, { useEffect, useState } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  TablePagination,
-  TextField,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box
 } from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
+import apiClient from "../../api/apiClient";
+import { useNavigate } from "react-router-dom";
 
 const BookTable = ({ books, onEdit, onDelete }) => {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [books, setBooks] = useState([]);
+  const navigate = useNavigate();
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    setPage(0);
+  const fetchBooks = async () => {
+    try {
+      const response = await apiClient.get("/books");
+      setBooks(response.data);
+    } catch (error) {
+      console.error("Error obteniendo libros:", error);
+    }
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+    const handleDelete = async (id) => {
+    if (window.confirm("¿Seguro que deseas eliminar este libro?")) {
+      try {
+        await apiClient.delete(`/books/${id}`);
+        setBooks((prev) => prev.filter((book) => book.id !== id));
+      } catch (error) {
+        alert("Error eliminando libro");
+      }
+    }
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+  const handleEdit = (id) => {
+    navigate(`/books/edit/${id}`);
   };
-
-  const filteredBooks = books.filter(
-    (book) =>
-      book.title.toLowerCase().includes(search.toLowerCase()) ||
-      book.author.toLowerCase().includes(search.toLowerCase()) ||
-      book.isbn.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const paginatedBooks = filteredBooks.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
 
   return (
-    <>
-      <TextField
-        label="Buscar"
-        variant="outlined"
-        value={search}
-        onChange={handleSearchChange}
-        fullWidth
-        sx={{ marginBottom: 2 }}
-      />
+    <Box sx={{ maxWidth: 900, margin: "auto", mt: 4 }}>
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ mb: 2 }}
+        onClick={() => navigate("/books/new")}
+      >
+       Agregar Libro
+      </Button>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>ID</TableCell>
               <TableCell>Título</TableCell>
               <TableCell>Autor</TableCell>
-              <TableCell>Editorial</TableCell>
-              <TableCell>Año</TableCell>
               <TableCell>ISBN</TableCell>
-              <TableCell>Cantidad</TableCell>
               <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedBooks.map((book) => (
+            {books.map((book) => (
               <TableRow key={book.id}>
+                <TableCell>{book.id}</TableCell>
                 <TableCell>{book.title}</TableCell>
                 <TableCell>{book.author}</TableCell>
-                <TableCell>{book.publisher}</TableCell>
-                <TableCell>{book.year}</TableCell>
                 <TableCell>{book.isbn}</TableCell>
-                <TableCell>{book.quantity}</TableCell>
                 <TableCell>
-                  <IconButton color="primary" onClick={() => onEdit(book)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton color="secondary" onClick={() => onDelete(book.id)}>
-                    <Delete />
-                  </IconButton>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => handleEdit(book.id)}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    sx={{ ml: 1 }}
+                    onClick={() => handleDelete(book.id)}
+                  >
+                    Eliminar
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        component="div"
-        count={filteredBooks.length}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </>
+    </Box>
   );
-};
+}
 
 export default BookTable;

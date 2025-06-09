@@ -1,20 +1,14 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AddBookPage from "./pages/AddBookPage";
-import BookTable from "./components/tables/BookTable";
-
-// Componente wrapper para pasar navigateToList a AddBookPage
-function AddBookPageWithNav() {
-  const navigate = useNavigate();
-  return <AddBookPage navigateToList={() => navigate("/books")} />;
-}
+import BookListPage from "./pages/BookListPage";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/books" element={<BookTable />} />
-        <Route path="/books/new" element={<AddBookPageWithNav />} />
+        <Route path="/books" element={<BookListPage />} />
+        <Route path="/books/new" element={<AddBookPage />} />
       </Routes>
     </Router>
   );
