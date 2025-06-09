@@ -5,6 +5,10 @@ from modules.books.routes import books_blueprint
 from modules.users.routes import users_blueprint
 from modules.loans.routes import loans_blueprint
 from flask import Blueprint, request, jsonify
+from flask_marshmallow import Marshmallow
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+
+jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__)
@@ -14,7 +18,11 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://user:pass@localhost:3307/bibliotecadb'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    app.config['JWT_SECRET_KEY'] = 'supersecretkey'
+    jwt.init_app(app)
+
     db.init_app(app)
+    ma.init_app(app)
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.register_blueprint(books_blueprint, url_prefix='/books')
@@ -24,6 +32,8 @@ def create_app():
     return app
 
 db = SQLAlchemy()
+ma = Marshmallow()
+jwt = JWTManager()
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -67,6 +77,58 @@ class Loan(db.Model):
 
     usuario = db.relationship('User', back_populates='prestamos')
     libro = db.relationship('Book', back_populates='prestamos')
+
+auth_blueprint = Blueprint('auth', __name__)
+
+# Esquemas de Marshmallow
+class RoleSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Role
+
+    id = ma.auto_field()
+    nombre = ma.auto_field()
+
+class UserSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = User
+
+    id = ma.auto_field()
+    nombre = ma.auto_field()
+    apellido = ma.auto_field()
+    correo = ma.auto_field()
+    telefono = ma.auto_field()
+    numero_identificacion = ma.auto_field()
+    rol_id = ma.auto_field()
+
+class BookSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Book
+
+    id = ma.auto_field()
+    titulo = ma.auto_field()
+    autor = ma.auto_field()
+    editorial = ma.auto_field()
+    anio_publicacion = ma.auto_field()
+    isbn = ma.auto_field()
+    cantidad_disponible = ma.auto_field()
+
+class LoanSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Loan
+
+    id = ma.auto_field()
+    usuario_id = ma.auto_field()
+    libro_id = ma.auto_field()
+    fecha_prestamo = ma.auto_field()
+    fecha_devolucion = ma.auto_field()
+
+role_schema = RoleSchema()
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
+book_schema = BookSchema()
+books_schema = BookSchema(many=True)
+loan_schema = LoanSchema()
+loans_schema = LoanSchema(many=True)
 
 auth_blueprint = Blueprint('auth', __name__)
 
