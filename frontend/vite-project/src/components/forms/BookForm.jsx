@@ -1,39 +1,45 @@
 
 import { TextField, Button, Box, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schema = yup.object({
+  title: yup.string().required("El título es obligatorio."),
+  author: yup.string().required("El autor es obligatorio."),
+  publisher: yup.string(),
+  year: yup
+    .number()
+    .typeError("El año debe ser un número")
+    .integer("El año debe ser un número entero")
+    .min(0, "El año no puede ser negativo")
+    .nullable()
+    .transform((value, originalValue) => (originalValue === "" ? null : value)),
+  isbn: yup.string().required("El ISBN es obligatorio."),
+  quantity: yup
+    .number()
+    .typeError("La cantidad debe ser un número")
+    .min(0, "La cantidad no puede ser negativa")
+    .required("La cantidad es obligatoria"),
+});
 
 const BookForm = ({ onSubmit, initialData = {} }) => {
-  const [formData, setFormData] = useState({
-    title: initialData.title || "",
-    author: initialData.author || "",
-    publisher: initialData.publisher || "",
-    year: initialData.year || "",
-    isbn: initialData.isbn || "",
-    quantity: initialData.quantity || "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      title: initialData.title || "",
+      author: initialData.author || "",
+      publisher: initialData.publisher || "",
+      year: initialData.year || "",
+      isbn: initialData.isbn || "",
+      quantity: initialData.quantity || "",
+    },
   });
 
-  const [errors, setErrors] = useState({});
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.title) newErrors.title = "El título es obligatorio.";
-    if (!formData.author) newErrors.author = "El autor es obligatorio.";
-    if (!formData.isbn) newErrors.isbn = "El ISBN es obligatorio.";
-    if (formData.quantity < 0) newErrors.quantity = "La cantidad no puede ser negativa.";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      onSubmit(formData);
-    }
-  };
 
   return (
     <Box
@@ -45,9 +51,7 @@ const BookForm = ({ onSubmit, initialData = {} }) => {
 
       <TextField
         label="Título"
-        name="title"
-        value={formData.title}
-        onChange={handleChange}
+        {...register("title")}
         error={!!errors.title}
         helperText={errors.title}
         fullWidth
@@ -55,9 +59,7 @@ const BookForm = ({ onSubmit, initialData = {} }) => {
 
       <TextField
         label="Autor"
-        name="author"
-        value={formData.author}
-        onChange={handleChange}
+        {...register("author")}
         error={!!errors.author}
         helperText={errors.author}
         fullWidth
@@ -65,36 +67,32 @@ const BookForm = ({ onSubmit, initialData = {} }) => {
 
       <TextField
         label="Editorial"
-        name="publisher"
-        value={formData.publisher}
-        onChange={handleChange}
+        {...register("publisher")}
+        error={!!errors.publisher}
+        helperText={errors.publisher?.message}
         fullWidth
       />
 
       <TextField
         label="Año de Publicación"
-        name="year"
-        value={formData.year}
-        onChange={handleChange}
+        {...register("year")}
         type="number"
+        error={!!errors.year}
+        helperText={errors.year?.message}
         fullWidth
       />
 
       <TextField
         label="ISBN"
-        name="isbn"
-        value={formData.isbn}
-        onChange={handleChange}
+        {...register("isbn")}
         error={!!errors.isbn}
-        helperText={errors.isbn}
+        helperText={errors.isbn?.message}
         fullWidth
       />
 
       <TextField
-        label="Cantidad Disponible"
-        name="quantity"
-        value={formData.quantity}
-        onChange={handleChange}
+         label="Cantidad Disponible"
+        {...register("quantity")}
         type="number"
         error={!!errors.quantity}
         helperText={errors.quantity}
