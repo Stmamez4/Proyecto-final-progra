@@ -7,7 +7,12 @@ from modules.loans.routes import loans_blueprint
 from flask import Blueprint, request, jsonify
 from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from werkzeug.security import generate_password_hash
+from flask_migrate import Migrate
 
+db = SQLAlchemy()
+ma = Marshmallow()
+migrate = Migrate()
 jwt = JWTManager()
 
 def create_app():
@@ -23,6 +28,7 @@ def create_app():
 
     db.init_app(app)
     ma.init_app(app)
+    migrate.init_app(app, db) 
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.register_blueprint(books_blueprint, url_prefix='/books')
@@ -31,9 +37,7 @@ def create_app():
 
     return app
 
-db = SQLAlchemy()
-ma = Marshmallow()
-jwt = JWTManager()
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -51,6 +55,7 @@ class User(db.Model):
     telefono = db.Column(db.String(20))
     numero_identificacion = db.Column(db.String(20), unique=True, nullable=False)
     rol_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
+    contrasena = db.Column(db.String(200), nullable=False)
 
     rol = db.relationship('Role', back_populates='usuarios')
     prestamos = db.relationship('Loan', back_populates='usuario')
@@ -80,7 +85,7 @@ class Loan(db.Model):
 
 auth_blueprint = Blueprint('auth', __name__)
 
-# Esquemas de Marshmallow
+
 class RoleSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Role
@@ -132,39 +137,52 @@ loans_schema = LoanSchema(many=True)
 
 auth_blueprint = Blueprint('auth', __name__)
 
+from werkzeug.security import check_password_hash
+
 @auth_blueprint.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    return jsonify({"message": "Logeado", "data": data})
+    correo = data.get('correo')
+    password = data.get('password')
+    user = User.query.filter_by(correo=correo).first()
+    if user and check_password_hash(user.contrasena, password):
+        access_token = create_access_token(identity=user.id)
+        return jsonify(access_token=access_token), 200
+    return jsonify({"msg": "Credenciales inválidas"}), 401
 
 @auth_blueprint.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    return jsonify({"message": "Registrado", "data": data})
+    hashed_password = generate_password_hash(data['password'])
+    new_user = User(
+        nombre=data['nombre'],
+        apellido=data['apellido'],
+        correo=data['correo'],
+        telefono=data.get('telefono'),
+        numero_identificacion=data['numero_identificacion'],
+        rol_id=data['rol_id'],
+        contrasena=hashed_password
+    )
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({"message": "Registrado", "user_id": new_user.id})
 
 books_blueprint = Blueprint('books', __name__)
 
 @books_blueprint.route('/', methods=['GET'])
+@jwt_required()
 def list_books():
     books = Book.query.all()
-    return jsonify([{
-        "id": book.id,
-        "titulo": book.titulo,
-        "autor": book.autor,
-        "isbn": book.isbn
-    } for book in books])
+    return books_schema.jsonify(books)
 
 @books_blueprint.route('/<int:book_id>', methods=['GET'])
+@jwt_required()
 def get_book(book_id):
     book = Book.query.get_or_404(book_id)
-    return jsonify({
-        "id": book.id,
-        "titulo": book.titulo,
-        "autor": book.autor,
-        "isbn": book.isbn
-    })
+    return book_schema.jsonify(book) 
 
 @books_blueprint.route('/', methods=['POST'])
+@jwt_required()
 def create_book():
     data = request.get_json()
     new_book = Book(
@@ -180,6 +198,7 @@ def create_book():
     return jsonify({"message": "Nuevo libro registrado", "book_id": new_book.id})
 
 @books_blueprint.route('/<int:book_id>', methods=['PUT'])
+@jwt_required()
 def update_book(book_id):
     data = request.get_json()
     book = Book.query.get_or_404(book_id)
@@ -195,6 +214,7 @@ def update_book(book_id):
     return jsonify({"message": "Libro actualizado", "book_id": book.id})
 
 @books_blueprint.route('/<int:book_id>', methods=['DELETE'])
+@jwt_required()
 def delete_book(book_id):
     book = Book.query.get_or_404(book_id)
     db.session.delete(book)
@@ -204,26 +224,19 @@ def delete_book(book_id):
 users_blueprint = Blueprint('users', __name__)
 
 @users_blueprint.route('/', methods=['GET'])
+@jwt_required()
 def list_users():
     users = User.query.all()
-    return jsonify([{
-        "id": user.id,
-        "nombre": user.nombre,
-        "apellido": user.apellido,
-        "correo": user.correo
-    } for user in users])
+    return users_schema.jsonify(users)
 
 @users_blueprint.route('/<int:user_id>', methods=['GET'])
+@jwt_required()
 def get_user(user_id):
     user = User.query.get_or_404(user_id)
-    return jsonify({
-        "id": user.id,
-        "nombre": user.nombre,
-        "apellido": user.apellido,
-        "correo": user.correo
-    })
+    return user_schema.jsonify(user)
 
 @users_blueprint.route('/', methods=['POST'])
+@jwt_required()
 def create_user():
     data = request.get_json()
     new_user = User(
@@ -239,6 +252,7 @@ def create_user():
     return jsonify({"message": "Nuevo usuario creado", "user_id": new_user.id})
 
 @users_blueprint.route('/<int:user_id>', methods=['PUT'])
+@jwt_required()
 def update_user(user_id):
     data = request.get_json()
     user = User.query.get_or_404(user_id)
@@ -254,6 +268,7 @@ def update_user(user_id):
     return jsonify({"message": "Usuario actualizado", "user_id": user.id})
 
 @users_blueprint.route('/<int:user_id>', methods=['DELETE'])
+@jwt_required()
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
@@ -263,28 +278,19 @@ def delete_user(user_id):
 loans_blueprint = Blueprint('loans', __name__)
 
 @loans_blueprint.route('/', methods=['GET'])
+@jwt_required()
 def list_loans():
     loans = Loan.query.all()
-    return jsonify([{
-        "id": loan.id,
-        "usuario_id": loan.usuario_id,
-        "libro_id": loan.libro_id,
-        "fecha_prestamo": loan.fecha_prestamo,
-        "fecha_devolucion": loan.fecha_devolucion
-    } for loan in loans])
+    return loans_schema.jsonify(loans)
 
 @loans_blueprint.route('/<int:loan_id>', methods=['GET'])
+@jwt_required()
 def get_loan(loan_id):
     loan = Loan.query.get_or_404(loan_id)
-    return jsonify({
-        "id": loan.id,
-        "usuario_id": loan.usuario_id,
-        "libro_id": loan.libro_id,
-        "fecha_prestamo": loan.fecha_prestamo,
-        "fecha_devolucion": loan.fecha_devolucion
-    })
+    return loan_schema.jsonify(loan)
 
 @loans_blueprint.route('/', methods=['POST'])
+@jwt_required()
 def create_loan():
     data = request.get_json()
     new_loan = Loan(
@@ -298,6 +304,7 @@ def create_loan():
     return jsonify({"message": "Nuevo prestamo registrado", "loan_id": new_loan.id})
 
 @loans_blueprint.route('/<int:loan_id>', methods=['PUT'])
+@jwt_required()
 def update_loan(loan_id):
     data = request.get_json()
     loan = Loan.query.get_or_404(loan_id)
@@ -311,6 +318,7 @@ def update_loan(loan_id):
     return jsonify({"message": "prestamo actualizado", "loan_id": loan.id})
 
 @loans_blueprint.route('/<int:loan_id>', methods=['DELETE'])
+@jwt_required()
 def delete_loan(loan_id):
     loan = Loan.query.get_or_404(loan_id)
     db.session.delete(loan)
