@@ -21,7 +21,6 @@ const LoanTable = ({ onEdit }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Fetch de préstamos
   const fetchLoans = async () => {
     try {
       const response = await apiClient.get("/loans");
@@ -31,12 +30,11 @@ const LoanTable = ({ onEdit }) => {
     }
   };
 
-  // Eliminar préstamo
   const handleDelete = async (id) => {
     if (!window.confirm("¿Estás seguro de que deseas eliminar este préstamo?")) return;
     try {
       await apiClient.delete(`/loans/${id}`);
-      fetchLoans(); // Recargar la lista después de eliminar
+      fetchLoans();
     } catch (error) {
       alert("Error al eliminar el préstamo: " + (error.response?.data?.error || "Error desconocido"));
     }
@@ -46,7 +44,6 @@ const LoanTable = ({ onEdit }) => {
     fetchLoans();
   }, []);
 
-  // Búsqueda y paginación
   const filteredLoans = loans.filter((loan) => {
     const userName = loan.user?.name || "";
     const bookTitle = loan.book?.title || "";

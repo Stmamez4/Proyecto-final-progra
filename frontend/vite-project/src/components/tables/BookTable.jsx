@@ -15,7 +15,6 @@ import apiClient from "../../api/apiClient";
 const BookTable = ({ onEdit }) => {
   const [books, setBooks] = useState([]);
 
-  // Fetch de libros
   const fetchBooks = async () => {
     try {
       const response = await apiClient.get("/books");
@@ -25,12 +24,11 @@ const BookTable = ({ onEdit }) => {
     }
   };
 
-  // Eliminar libro
   const handleDelete = async (id) => {
     if (!window.confirm("¿Estás seguro de que deseas eliminar este libro?")) return;
     try {
       await apiClient.delete(`/books/${id}`);
-      fetchBooks(); // Recargar la lista después de eliminar
+      fetchBooks();
     } catch (error) {
       alert("Error al eliminar el libro: " + (error.response?.data?.error || "Error desconocido"));
     }
