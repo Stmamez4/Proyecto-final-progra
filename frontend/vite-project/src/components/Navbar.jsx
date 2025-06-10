@@ -4,17 +4,24 @@ import { useEffect, useState } from 'react';
 function Navbar() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     setIsAuthenticated(!!localStorage.getItem('token'));
-    const handleStorage = () => setIsAuthenticated(!!localStorage.getItem('token'));
+    setUserRole(localStorage.getItem('role'));
+    const handleStorage = () => {
+      setIsAuthenticated(!!localStorage.getItem('token'));
+      setUserRole(localStorage.getItem('role'));
+    };
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('role');
     setIsAuthenticated(false);
+    setUserRole(null);
     navigate('/login');
   };
 
@@ -24,11 +31,13 @@ function Navbar() {
         <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Biblioteca</span>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <Link to="/books" style={navLinkStyle}>Libros</Link>
-          <Link to="/books/new" style={navLinkStyle}>Agregar Libro</Link>
-          {isAuthenticated && (
+          {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
+            <Link to="/books/new" style={navLinkStyle}>Agregar Libro</Link>
+          )}
+          {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
             <Link to="/users" style={navLinkStyle}>Usuarios</Link>
           )}
-          {isAuthenticated && (
+          {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
             <Link to="/reportes" style={navLinkStyle}>Reportes</Link>
           )}
           {!isAuthenticated && (
@@ -50,7 +59,6 @@ function Navbar() {
 
 export default Navbar;
 
-// Estilo para los enlaces de navegación
 const navLinkStyle = {
   color: '#fff',
   textDecoration: 'none',
