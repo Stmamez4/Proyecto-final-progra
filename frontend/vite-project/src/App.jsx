@@ -5,6 +5,8 @@ import BookListPage from "./pages/BookListPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import PrivateRoute from "./components/PrivateRoute";
+import UserListPage from "./pages/UserListPage";
+import ReportingPage from "./pages/ReportingPage";
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
         <Route element={<PrivateRoute />}>
           <Route path="/books" element={<BookListPage />} />
           <Route path="/books/new" element={<AddBookPage />} />
+          <Route path="/users" element={<UserListPage />} />
+          <Route path="/reportes" element={<ReportingPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

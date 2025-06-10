@@ -34,6 +34,8 @@ def create_app():
     app.register_blueprint(books_blueprint, url_prefix='/books')
     app.register_blueprint(users_blueprint, url_prefix='/users')
     app.register_blueprint(loans_blueprint, url_prefix='/loans')
+    from modules.reports.routes import reports_blueprint
+    app.register_blueprint(reports_blueprint, url_prefix='/reports')
 
     return app
 
@@ -293,6 +295,13 @@ def get_loan(loan_id):
 @jwt_required()
 def create_loan():
     data = request.get_json()
+    existing_loan = Loan.query.filter_by(
+        usuario_id=data['usuario_id'],
+        libro_id=data['libro_id'],
+        fecha_devolucion=None
+    ).first()
+    if existing_loan:
+        return jsonify({"error": "El usuario ya tiene un préstamo activo para este libro"}), 400
     new_loan = Loan(
         usuario_id=data['usuario_id'],
         libro_id=data['libro_id'],
