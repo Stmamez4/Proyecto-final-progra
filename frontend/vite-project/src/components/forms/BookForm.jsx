@@ -1,106 +1,89 @@
-
-import { TextField, Button, Box, Typography } from "@mui/material";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { TextField, Button, Box, Typography } from "@mui/material";
+import apiClient from "../../api/apiClient";
 
 const schema = yup.object({
   title: yup.string().required("El título es obligatorio."),
   author: yup.string().required("El autor es obligatorio."),
-  publisher: yup.string(),
-  year: yup
-    .number()
-    .typeError("El año debe ser un número")
-    .integer("El año debe ser un número entero")
-    .min(0, "El año no puede ser negativo")
-    .nullable()
-    .transform((value, originalValue) => (originalValue === "" ? null : value)),
   isbn: yup.string().required("El ISBN es obligatorio."),
   quantity: yup
     .number()
     .typeError("La cantidad debe ser un número")
+    .integer("La cantidad debe ser un número entero")
     .min(0, "La cantidad no puede ser negativa")
-    .required("La cantidad es obligatoria"),
+    .required("La cantidad es obligatoria."),
 });
 
-const BookForm = ({ onSubmit, initialData = {} }) => {
+const BookForm = ({ onSuccess, book = {} }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
+    defaultValues: book,
     resolver: yupResolver(schema),
-    defaultValues: {
-      title: initialData.title || "",
-      author: initialData.author || "",
-      publisher: initialData.publisher || "",
-      year: initialData.year || "",
-      isbn: initialData.isbn || "",
-      quantity: initialData.quantity || "",
-    },
   });
 
+  const onSubmit = async (data) => {
+    try {
+      if (book.id) {
+        await apiClient.put(`/books/${book.id}`, data);
+      } else {
+        await apiClient.post("/books", data);
+      }
+      onSuccess && onSuccess();
+    } catch (error) {
+      alert("Error al guardar el libro: " + (error.response?.data?.error || "Error desconocido"));
+    }
+  };
 
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit}
-      sx={{ maxWidth: 400, margin: "auto", display: "flex", flexDirection: "column", gap: 2 }}
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ maxWidth: 400, mx: "auto", mt: 5 }}
     >
-      <Typography variant="h5">{initialData.id ? "Editar Libro" : "Agregar Libro"}</Typography>
-
+      <Typography variant="h5" textAlign="center" mb={3}>
+        {book.id ? "Editar Libro" : "Nuevo Libro"}
+      </Typography>
       <TextField
+        fullWidth
         label="Título"
         {...register("title")}
         error={!!errors.title}
-        helperText={errors.title}
-        fullWidth
+        helperText={errors.title?.message}
+        margin="normal"
       />
-
       <TextField
+        fullWidth
         label="Autor"
         {...register("author")}
         error={!!errors.author}
-        helperText={errors.author}
-        fullWidth
+        helperText={errors.author?.message}
+        margin="normal"
       />
-
       <TextField
-        label="Editorial"
-        {...register("publisher")}
-        error={!!errors.publisher}
-        helperText={errors.publisher?.message}
         fullWidth
-      />
-
-      <TextField
-        label="Año de Publicación"
-        {...register("year")}
-        type="number"
-        error={!!errors.year}
-        helperText={errors.year?.message}
-        fullWidth
-      />
-
-      <TextField
         label="ISBN"
         {...register("isbn")}
         error={!!errors.isbn}
         helperText={errors.isbn?.message}
-        fullWidth
+        margin="normal"
       />
-
       <TextField
-         label="Cantidad Disponible"
-        {...register("quantity")}
-        type="number"
-        error={!!errors.quantity}
-        helperText={errors.quantity}
         fullWidth
+        label="Cantidad"
+        type="number"
+        {...register("quantity")}
+        error={!!errors.quantity}
+        helperText={errors.quantity?.message}
+        margin="normal"
       />
-
-      <Button type="submit" variant="contained" color="primary">
-        {initialData.id ? "Guardar Cambios" : "Agregar Libro"}
+      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>
+        Guardar
       </Button>
     </Box>
   );

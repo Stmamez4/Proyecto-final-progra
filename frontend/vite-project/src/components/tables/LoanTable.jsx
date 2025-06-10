@@ -6,16 +6,60 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Button,
+  Box,
   IconButton,
   TablePagination,
   TextField,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
+import apiClient from "../../api/apiClient";
 
-const LoanTable = ({ loans, onEdit, onDelete }) => {
+const LoanTable = ({ onEdit }) => {
+  const [loans, setLoans] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // Fetch de préstamos
+  const fetchLoans = async () => {
+    try {
+      const response = await apiClient.get("/loans");
+      setLoans(response.data);
+    } catch (error) {
+      alert("Error al cargar los préstamos: " + (error.response?.data?.error || "Error desconocido"));
+    }
+  };
+
+  // Eliminar préstamo
+  const handleDelete = async (id) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este préstamo?")) return;
+    try {
+      await apiClient.delete(`/loans/${id}`);
+      fetchLoans(); // Recargar la lista después de eliminar
+    } catch (error) {
+      alert("Error al eliminar el préstamo: " + (error.response?.data?.error || "Error desconocido"));
+    }
+  };
+
+  useEffect(() => {
+    fetchLoans();
+  }, []);
+
+  // Búsqueda y paginación
+  const filteredLoans = loans.filter((loan) => {
+    const userName = loan.user?.name || "";
+    const bookTitle = loan.book?.title || "";
+    return (
+      userName.toLowerCase().includes(search.toLowerCase()) ||
+      bookTitle.toLowerCase().includes(search.toLowerCase())
+    );
+  });
+
+  const paginatedLoans = filteredLoans.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -31,17 +75,6 @@ const LoanTable = ({ loans, onEdit, onDelete }) => {
     setPage(0);
   };
 
-  const filteredLoans = loans.filter(
-    (loan) =>
-      loan.userName.toLowerCase().includes(search.toLowerCase()) ||
-      loan.bookTitle.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const paginatedLoans = filteredLoans.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
-
   return (
     <>
       <TextField
@@ -50,9 +83,9 @@ const LoanTable = ({ loans, onEdit, onDelete }) => {
         value={search}
         onChange={handleSearchChange}
         fullWidth
-        sx={{ marginBottom: 2 }}
+        sx={{ marginBottom: 2, marginTop: 2 }}
       />
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -66,17 +99,19 @@ const LoanTable = ({ loans, onEdit, onDelete }) => {
           <TableBody>
             {paginatedLoans.map((loan) => (
               <TableRow key={loan.id}>
-                <TableCell>{loan.userName}</TableCell>
-                <TableCell>{loan.bookTitle}</TableCell>
-                <TableCell>{loan.loanDate}</TableCell>
-                <TableCell>{loan.returnDate}</TableCell>
+                <TableCell>{loan.user?.name}</TableCell>
+                <TableCell>{loan.book?.title}</TableCell>
+                <TableCell>{loan.borrow_date || loan.borrowDate}</TableCell>
+                <TableCell>{loan.return_date || loan.returnDate || "Pendiente"}</TableCell>
                 <TableCell>
-                  <IconButton color="primary" onClick={() => onEdit(loan)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton color="secondary" onClick={() => onDelete(loan.id)}>
-                    <Delete />
-                  </IconButton>
+                  <Box display="flex" gap={1}>
+                    <IconButton color="primary" onClick={() => onEdit(loan)}>
+                      <Edit />
+                    </IconButton>
+                    <IconButton color="secondary" onClick={() => handleDelete(loan.id)}>
+                      <Delete />
+                    </IconButton>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
