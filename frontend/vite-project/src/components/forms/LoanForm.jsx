@@ -1,7 +1,8 @@
-
+import React, { useState } from "react";
 import { TextField, Button, Box, Typography, MenuItem } from "@mui/material";
+import apiClient from "../../api/apiClient";
 
-const LoanForm = ({ onSubmit, initialData = {}, users = [], books = [] }) => {
+const LoanForm = ({ onSuccess, initialData = {}, users = [], books = [] }) => {
   const [formData, setFormData] = useState({
     userId: initialData.userId || "",
     bookId: initialData.bookId || "",
@@ -13,38 +14,40 @@ const LoanForm = ({ onSubmit, initialData = {}, users = [], books = [] }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.userId) newErrors.userId = "El usuario es obligatorio.";
-    if (!formData.bookId) newErrors.bookId = "El libro es obligatorio.";
-    if (!formData.returnDate) {
-      newErrors.returnDate = "La fecha de devolución es obligatoria.";
-    } else if (new Date(formData.returnDate) <= new Date(formData.loanDate)) {
-      newErrors.returnDate = "La fecha de devolución debe ser posterior a la fecha de préstamo.";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      onSubmit(formData);
+    try {
+      if (initialData.id) {
+        await apiClient.put(`/loans/${initialData.id}`, {
+          userId: formData.userId,
+          bookId: formData.bookId,
+          loanDate: formData.loanDate,
+          returnDate: formData.returnDate,
+        });
+      } else {
+        await apiClient.post("/loans", {
+          userId: formData.userId,
+          bookId: formData.bookId,
+          loanDate: formData.loanDate,
+          returnDate: formData.returnDate,
+        });
+      }
+      onSuccess();
+    } catch (error) {
+      setErrors(error.response?.data || { message: "Error desconocido" });
     }
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ maxWidth: 400, margin: "auto", display: "flex", flexDirection: "column", gap: 2 }}
-    >
-      <Typography variant="h5">{initialData.id ? "Editar Préstamo" : "Agregar Préstamo"}</Typography>
-
+    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 400, mx: "auto", mt: 5 }}>
+      <Typography variant="h5" textAlign="center" mb={3}>
+        {initialData.id ? "Editar Préstamo" : "Nuevo Préstamo"}
+      </Typography>
       <TextField
+        fullWidth
         select
         label="Usuario"
         name="userId"
@@ -52,16 +55,16 @@ const LoanForm = ({ onSubmit, initialData = {}, users = [], books = [] }) => {
         onChange={handleChange}
         error={!!errors.userId}
         helperText={errors.userId}
-        fullWidth
+        margin="normal"
       >
         {users.map((user) => (
           <MenuItem key={user.id} value={user.id}>
-            {`${user.firstName} ${user.lastName}`}
+            {user.name || `${user.nombre} ${user.apellido}`}
           </MenuItem>
         ))}
       </TextField>
-
       <TextField
+        fullWidth
         select
         label="Libro"
         name="bookId"
@@ -69,39 +72,43 @@ const LoanForm = ({ onSubmit, initialData = {}, users = [], books = [] }) => {
         onChange={handleChange}
         error={!!errors.bookId}
         helperText={errors.bookId}
-        fullWidth
+        margin="normal"
       >
         {books.map((book) => (
           <MenuItem key={book.id} value={book.id}>
-            {book.title}
+            {book.title || book.titulo}
           </MenuItem>
         ))}
       </TextField>
-
       <TextField
+        fullWidth
+        type="date"
         label="Fecha de Préstamo"
         name="loanDate"
         value={formData.loanDate}
         onChange={handleChange}
-        type="date"
-        fullWidth
-        disabled
+        margin="normal"
+        InputLabelProps={{ shrink: true }}
+        disabled={!!initialData.id}
       />
-
       <TextField
+        fullWidth
+        type="date"
         label="Fecha de Devolución"
         name="returnDate"
         value={formData.returnDate}
         onChange={handleChange}
-        type="date"
-        error={!!errors.returnDate}
-        helperText={errors.returnDate}
-        fullWidth
+        margin="normal"
+        InputLabelProps={{ shrink: true }}
       />
-
-      <Button type="submit" variant="contained" color="primary">
-        {initialData.id ? "Guardar Cambios" : "Agregar Préstamo"}
+      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>
+        Guardar
       </Button>
+      {errors.message && (
+        <Typography color="error" mt={2} textAlign="center">
+          {errors.message}
+        </Typography>
+      )}
     </Box>
   );
 };

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -6,97 +7,80 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
-  TablePagination,
-  TextField,
+  Button,
+  Box,
 } from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
+import apiClient from "../../api/apiClient";
 
-const BookTable = ({ books, onEdit, onDelete }) => {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+const BookTable = ({ onEdit }) => {
+  const [books, setBooks] = useState([]);
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    setPage(0);
+  const fetchBooks = async () => {
+    try {
+      const response = await apiClient.get("/books");
+      setBooks(response.data);
+    } catch (error) {
+      alert("Error al cargar los libros: " + (error.response?.data?.error || "Error desconocido"));
+    }
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleDelete = async (id) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este libro?")) return;
+    try {
+      await apiClient.delete(`/books/${id}`);
+      fetchBooks();
+    } catch (error) {
+      alert("Error al eliminar el libro: " + (error.response?.data?.error || "Error desconocido"));
+    }
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const filteredBooks = books.filter(
-    (book) =>
-      book.title.toLowerCase().includes(search.toLowerCase()) ||
-      book.author.toLowerCase().includes(search.toLowerCase()) ||
-      book.isbn.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const paginatedBooks = filteredBooks.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  useEffect(() => {
+    fetchBooks();
+  }, []);
 
   return (
-    <>
-      <TextField
-        label="Buscar"
-        variant="outlined"
-        value={search}
-        onChange={handleSearchChange}
-        fullWidth
-        sx={{ marginBottom: 2 }}
-      />
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Título</TableCell>
-              <TableCell>Autor</TableCell>
-              <TableCell>Editorial</TableCell>
-              <TableCell>Año</TableCell>
-              <TableCell>ISBN</TableCell>
-              <TableCell>Cantidad</TableCell>
-              <TableCell>Acciones</TableCell>
+    <TableContainer component={Paper} sx={{ mt: 4 }}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Título</TableCell>
+            <TableCell>Autor</TableCell>
+            <TableCell>ISBN</TableCell>
+            <TableCell>Cantidad</TableCell>
+            <TableCell>Acciones</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {books.map((book) => (
+            <TableRow key={book.id}>
+              <TableCell>{book.title}</TableCell>
+              <TableCell>{book.author}</TableCell>
+              <TableCell>{book.isbn}</TableCell>
+              <TableCell>{book.quantity}</TableCell>
+              <TableCell>
+                <Box display="flex" gap={1}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => onEdit(book)}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    color="error"
+                    onClick={() => handleDelete(book.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </Box>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedBooks.map((book) => (
-              <TableRow key={book.id}>
-                <TableCell>{book.title}</TableCell>
-                <TableCell>{book.author}</TableCell>
-                <TableCell>{book.publisher}</TableCell>
-                <TableCell>{book.year}</TableCell>
-                <TableCell>{book.isbn}</TableCell>
-                <TableCell>{book.quantity}</TableCell>
-                <TableCell>
-                  <IconButton color="primary" onClick={() => onEdit(book)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton color="secondary" onClick={() => onDelete(book.id)}>
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        component="div"
-        count={filteredBooks.length}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
