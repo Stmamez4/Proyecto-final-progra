@@ -31,6 +31,11 @@ function Navbar() {
         <Button color="inherit" component={Link} to="/books/new">
           Agregar Libro
         </Button>
+        {isAuthenticated && (
+          <Button color="inherit" component={Link} to="/users">
+            Usuarios
+          </Button>
+        )}
         {!isAuthenticated && (
           <>
             <Button color="inherit" component={Link} to="/login">

@@ -293,6 +293,13 @@ def get_loan(loan_id):
 @jwt_required()
 def create_loan():
     data = request.get_json()
+    existing_loan = Loan.query.filter_by(
+        usuario_id=data['usuario_id'],
+        libro_id=data['libro_id'],
+        fecha_devolucion=None
+    ).first()
+    if existing_loan:
+        return jsonify({"error": "El usuario ya tiene un préstamo activo para este libro"}), 400
     new_loan = Loan(
         usuario_id=data['usuario_id'],
         libro_id=data['libro_id'],
