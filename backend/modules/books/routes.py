@@ -4,7 +4,6 @@ from app import db
 
 books_blueprint = Blueprint('books', __name__)
 
-# Listar todos los libros
 @books_blueprint.route('/books', methods=['GET'])
 def list_books():
     books = Book.query.all()
@@ -17,7 +16,6 @@ def list_books():
     } for book in books]
     return jsonify(books_list), 200
 
-# Crear un nuevo libro
 @books_blueprint.route('/books', methods=['POST'])
 def create_book():
     data = request.get_json()
@@ -35,7 +33,6 @@ def create_book():
     db.session.commit()
     return jsonify({"message": "Libro creado exitosamente"}), 201
 
-# Actualizar un libro existente
 @books_blueprint.route('/books/<int:id>', methods=['PUT'])
 def update_book(id):
     book = Book.query.get_or_404(id)
@@ -47,7 +44,6 @@ def update_book(id):
     db.session.commit()
     return jsonify({"message": "Libro actualizado exitosamente"}), 200
 
-# Eliminar un libro
 @books_blueprint.route('/books/<int:id>', methods=['DELETE'])
 def delete_book(id):
     book = Book.query.get_or_404(id)

@@ -10,7 +10,11 @@ def list_loans():
     loans_list = [{
         "id": loan.id,
         "user": {"id": loan.user.id, "name": loan.user.name},
-        "book": {"id": loan.book.id, "title": loan.book.title},
+        "book": {
+            "id": loan.book.id,
+            "title": loan.book.title,
+            "quantity": getattr(loan.book, 'quantity', getattr(loan.book, 'cantidad_disponible', None))
+        },
         "borrow_date": loan.borrow_date,
         "return_date": loan.return_date,
     } for loan in loans]
