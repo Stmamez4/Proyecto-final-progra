@@ -34,6 +34,8 @@ def create_app():
     app.register_blueprint(books_blueprint, url_prefix='/books')
     app.register_blueprint(users_blueprint, url_prefix='/users')
     app.register_blueprint(loans_blueprint, url_prefix='/loans')
+    from modules.reports.routes import reports_blueprint
+    app.register_blueprint(reports_blueprint, url_prefix='/reports')
 
     return app
 

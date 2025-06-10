@@ -36,6 +36,11 @@ function Navbar() {
             Usuarios
           </Button>
         )}
+        {isAuthenticated && (
+          <Button color="inherit" component={Link} to="/reportes">
+            Reportes
+          </Button>
+        )}
         {!isAuthenticated && (
           <>
             <Button color="inherit" component={Link} to="/login">
