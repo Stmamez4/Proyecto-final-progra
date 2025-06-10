@@ -39,6 +39,9 @@ const BookForm = ({ onSuccess, book = {} }) => {
     }
   };
 
+  const userRole = localStorage.getItem('role');
+  const canSubmit = userRole === 'Gestor' || userRole === 'Administrador';
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -140,11 +143,14 @@ const BookForm = ({ onSuccess, book = {} }) => {
           borderRadius: 4,
           fontWeight: "bold",
           fontSize: 16,
-          cursor: "pointer",
+          cursor: canSubmit ? "pointer" : "not-allowed",
+          opacity: canSubmit ? 1 : 0.6,
         }}
+        disabled={!canSubmit}
       >
         Guardar
       </button>
+      {!canSubmit && <div style={{ color: '#d32f2f', marginTop: 8, textAlign: 'center' }}>No tienes permisos para realizar esta acción.</div>}
     </form>
   );
 };

@@ -31,6 +31,10 @@ const UserTable = ({ users, onEdit, onDelete }) => {
     page * rowsPerPage + rowsPerPage
   );
 
+  const userRole = localStorage.getItem("role");
+
+  const canEditDelete = userRole === "Gestor" || userRole === "Administrador";
+
   return (
     <>
       <input
@@ -76,37 +80,41 @@ const UserTable = ({ users, onEdit, onDelete }) => {
                 <td style={tdStyle}>{user.phone}</td>
                 <td style={tdStyle}>{user.idNumber}</td>
                 <td style={tdStyle}>
-                  <button
-                    onClick={() => onEdit(user)}
-                    style={{
-                      padding: "4px 12px",
-                      background: "#1976d2",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: 4,
-                      cursor: "pointer",
-                      fontSize: 14,
-                      marginRight: 6,
-                    }}
-                    title="Editar"
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    onClick={() => onDelete(user.id)}
-                    style={{
-                      padding: "4px 12px",
-                      background: "#fff",
-                      color: "#d32f2f",
-                      border: "1px solid #d32f2f",
-                      borderRadius: 4,
-                      cursor: "pointer",
-                      fontSize: 14,
-                    }}
-                    title="Eliminar"
-                  >
-                    🗑️
-                  </button>
+                  {canEditDelete && (
+                    <>
+                      <button
+                        onClick={() => onEdit(user)}
+                        style={{
+                          padding: "4px 12px",
+                          background: "#1976d2",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                          fontSize: 14,
+                          marginRight: 6,
+                        }}
+                        title="Editar"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => onDelete(user.id)}
+                        style={{
+                          padding: "4px 12px",
+                          background: "#fff",
+                          color: "#d32f2f",
+                          border: "1px solid #d32f2f",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                          fontSize: 14,
+                        }}
+                        title="Eliminar"
+                      >
+                        🗑️
+                      </button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}

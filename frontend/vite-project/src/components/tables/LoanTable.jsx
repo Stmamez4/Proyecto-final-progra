@@ -58,6 +58,9 @@ const LoanTable = ({ onEdit }) => {
     setPage(0);
   };
 
+  const userRole = localStorage.getItem('role');
+  const canEditDelete = userRole === 'Gestor' || userRole === 'Administrador';
+
   return (
     <div style={{ marginTop: 24 }}>
       <input
@@ -86,22 +89,24 @@ const LoanTable = ({ onEdit }) => {
                 <td style={tdStyle}>{loan.borrow_date || loan.borrowDate}</td>
                 <td style={tdStyle}>{loan.return_date || loan.returnDate || "Pendiente"}</td>
                 <td style={tdStyle}>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button
-                      onClick={() => onEdit(loan)}
-                      style={{ padding: '4px 12px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
-                      title="Editar"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={() => handleDelete(loan.id)}
-                      style={{ padding: '4px 12px', background: '#fff', color: '#d32f2f', border: '1px solid #d32f2f', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
-                      title="Eliminar"
-                    >
-                      🗑️
-                    </button>
-                  </div>
+                  {canEditDelete && (
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        onClick={() => onEdit(loan)}
+                        style={{ padding: '4px 12px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                        title="Editar"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => handleDelete(loan.id)}
+                        style={{ padding: '4px 12px', background: '#fff', color: '#d32f2f', border: '1px solid #d32f2f', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                        title="Eliminar"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}

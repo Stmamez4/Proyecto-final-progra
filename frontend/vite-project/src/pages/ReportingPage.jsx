@@ -11,6 +11,16 @@ const ReportingPage = () => {
   const [error, setError] = useState('');
 
   const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('role');
+
+  if (userRole !== 'Administrador') {
+    return (
+      <div style={{ maxWidth: 600, margin: '60px auto', padding: 32, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001', textAlign: 'center' }}>
+        <h2>Acceso denegado</h2>
+        <p>Solo los administradores pueden ver los reportes.</p>
+      </div>
+    );
+  }
 
   const handleReportTypeChange = (type) => {
     setReportType(type);
@@ -53,7 +63,6 @@ const ReportingPage = () => {
     }
   };
 
-  // Renderiza los filtros según el tipo de reporte
   const renderFilters = () => {
     if (reportType === 'book') {
       return (
@@ -96,7 +105,6 @@ const ReportingPage = () => {
     }
   };
 
-  // Renderiza la tabla según el tipo de reporte
   const renderTable = () => {
     if (results.length === 0) return <p>No hay resultados.</p>;
     if (reportType === 'book') {

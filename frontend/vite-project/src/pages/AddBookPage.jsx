@@ -2,6 +2,16 @@ import BookForm from "../components/forms/BookForm";
 import apiClient from "../api/apiClient";
 
 function AddBookPage({ navigateToList }) {
+  const userRole = localStorage.getItem('role');
+  if (userRole !== 'Gestor' && userRole !== 'Administrador') {
+    return (
+      <div style={{ maxWidth: 600, margin: '60px auto', padding: 32, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001', textAlign: 'center' }}>
+        <h2>Acceso denegado</h2>
+        <p>No tienes permisos para agregar libros.</p>
+      </div>
+    );
+  }
+
   const handleAddBook = async (data) => {
     try {
       await apiClient.post("/books", data);

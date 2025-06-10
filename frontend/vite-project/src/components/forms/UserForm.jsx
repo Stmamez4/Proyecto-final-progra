@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 const UserForm = ({ onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
     firstName: initialData.firstName || "",
@@ -34,6 +36,9 @@ const UserForm = ({ onSubmit, initialData = {} }) => {
       onSubmit(formData);
     }
   };
+
+  const userRole = localStorage.getItem('role');
+  const canSubmit = userRole === 'Gestor' || userRole === 'Administrador';
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16, padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
@@ -92,9 +97,10 @@ const UserForm = ({ onSubmit, initialData = {} }) => {
         />
         {errors.idNumber && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.idNumber}</span>}
       </div>
-      <button type="submit" style={{ width: '100%', padding: '10px 0', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', fontSize: 16, cursor: 'pointer' }}>
+      <button type="submit" style={{ width: '100%', padding: '10px 0', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', fontSize: 16, cursor: canSubmit ? 'pointer' : 'not-allowed', opacity: canSubmit ? 1 : 0.6 }} disabled={!canSubmit}>
         {initialData.id ? 'Guardar Cambios' : 'Agregar Usuario'}
       </button>
+      {!canSubmit && <div style={{ color: '#d32f2f', marginTop: 8, textAlign: 'center' }}>No tienes permisos para realizar esta acción.</div>}
     </form>
   );
 };

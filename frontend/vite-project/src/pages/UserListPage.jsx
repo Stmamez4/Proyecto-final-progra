@@ -71,6 +71,16 @@ const UserListPage = () => {
     }
   };
 
+  const userRole = localStorage.getItem('role');
+  if (userRole !== 'Gestor' && userRole !== 'Administrador') {
+    return (
+      <div style={{ maxWidth: 600, margin: '60px auto', padding: 32, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001', textAlign: 'center' }}>
+        <h2>Acceso denegado</h2>
+        <p>No tienes permisos para ver la gestión de usuarios.</p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ maxWidth: 900, margin: '40px auto', padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
