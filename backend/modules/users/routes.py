@@ -12,6 +12,8 @@ def is_valid_email(email):
     return re.match(regex, email) is not None
 
 @users_blueprint.route('/users', methods=['GET'])
+@jwt_required()
+@role_required(["Gestor", "Administrador"])
 def list_users():
     users = User.query.all()
     users_list = [{"id": user.id, "name": user.name, "email": user.email, "role": user.role} for user in users]
@@ -45,6 +47,8 @@ def create_user():
     return jsonify({"message": "Usuario creado exitosamente"}), 201
 
 @users_blueprint.route('/users/<int:id>', methods=['PUT'])
+@jwt_required()
+@role_required(["Gestor", "Administrador"])
 def update_user(id):
     user = User.query.get_or_404(id)
     data = request.get_json()
