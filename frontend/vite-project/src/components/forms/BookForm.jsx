@@ -2,7 +2,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, Button, Box, Typography } from "@mui/material";
 import apiClient from "../../api/apiClient";
 
 const schema = yup.object({
@@ -41,51 +40,112 @@ const BookForm = ({ onSuccess, book = {} }) => {
   };
 
   return (
-    <Box
-      component="form"
+    <form
       onSubmit={handleSubmit(onSubmit)}
-      sx={{ maxWidth: 400, mx: "auto", mt: 5 }}
+      style={{
+        maxWidth: 400,
+        margin: "40px auto",
+        padding: 24,
+        background: "#fff",
+        borderRadius: 8,
+        boxShadow: "0 2px 8px #0001",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+      }}
     >
-      <Typography variant="h5" textAlign="center" mb={3}>
+      <h3 style={{ textAlign: "center", marginBottom: 24 }}>
         {book.id ? "Editar Libro" : "Nuevo Libro"}
-      </Typography>
-      <TextField
-        fullWidth
-        label="Título"
-        {...register("title")}
-        error={!!errors.title}
-        helperText={errors.title?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Autor"
-        {...register("author")}
-        error={!!errors.author}
-        helperText={errors.author?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="ISBN"
-        {...register("isbn")}
-        error={!!errors.isbn}
-        helperText={errors.isbn?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Cantidad"
-        type="number"
-        {...register("quantity")}
-        error={!!errors.quantity}
-        helperText={errors.quantity?.message}
-        margin="normal"
-      />
-      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>
+      </h3>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", marginBottom: 4 }}>Título</label>
+        <input
+          type="text"
+          {...register("title")}
+          style={{
+            width: "100%",
+            padding: 8,
+            border: errors.title ? "1px solid #d32f2f" : "1px solid #ccc",
+            borderRadius: 4,
+          }}
+        />
+        {errors.title && (
+          <span style={{ color: "#d32f2f", fontSize: 13 }}>
+            {errors.title.message}
+          </span>
+        )}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", marginBottom: 4 }}>Autor</label>
+        <input
+          type="text"
+          {...register("author")}
+          style={{
+            width: "100%",
+            padding: 8,
+            border: errors.author ? "1px solid #d32f2f" : "1px solid #ccc",
+            borderRadius: 4,
+          }}
+        />
+        {errors.author && (
+          <span style={{ color: "#d32f2f", fontSize: 13 }}>
+            {errors.author.message}
+          </span>
+        )}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", marginBottom: 4 }}>ISBN</label>
+        <input
+          type="text"
+          {...register("isbn")}
+          style={{
+            width: "100%",
+            padding: 8,
+            border: errors.isbn ? "1px solid #d32f2f" : "1px solid #ccc",
+            borderRadius: 4,
+          }}
+        />
+        {errors.isbn && (
+          <span style={{ color: "#d32f2f", fontSize: 13 }}>
+            {errors.isbn.message}
+          </span>
+        )}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", marginBottom: 4 }}>Cantidad</label>
+        <input
+          type="number"
+          {...register("quantity")}
+          style={{
+            width: "100%",
+            padding: 8,
+            border: errors.quantity ? "1px solid #d32f2f" : "1px solid #ccc",
+            borderRadius: 4,
+          }}
+        />
+        {errors.quantity && (
+          <span style={{ color: "#d32f2f", fontSize: 13 }}>
+            {errors.quantity.message}
+          </span>
+        )}
+      </div>
+      <button
+        type="submit"
+        style={{
+          width: "100%",
+          padding: "10px 0",
+          background: "#1976d2",
+          color: "#fff",
+          border: "none",
+          borderRadius: 4,
+          fontWeight: "bold",
+          fontSize: 16,
+          cursor: "pointer",
+        }}
+      >
         Guardar
-      </Button>
-    </Box>
+      </button>
+    </form>
   );
 };
 

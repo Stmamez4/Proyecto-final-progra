@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from modules.models import Loan, Book, User
-from app import db
+from modules.db import db
 
 reports_blueprint = Blueprint('reports', __name__)
 

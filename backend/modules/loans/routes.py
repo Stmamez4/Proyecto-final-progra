@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from modules.models import Loan, Book, User
-from app import db
+from modules.db import db
 
 loans_blueprint = Blueprint('loans', __name__)
 

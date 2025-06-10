@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 function Navbar() {
@@ -20,45 +19,43 @@ function Navbar() {
   };
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" style={{ flexGrow: 1 }}>
-          Biblioteca
-        </Typography>
-        <Button color="inherit" component={Link} to="/books">
-          Libros
-        </Button>
-        <Button color="inherit" component={Link} to="/books/new">
-          Agregar Libro
-        </Button>
-        {isAuthenticated && (
-          <Button color="inherit" component={Link} to="/users">
-            Usuarios
-          </Button>
-        )}
-        {isAuthenticated && (
-          <Button color="inherit" component={Link} to="/reportes">
-            Reportes
-          </Button>
-        )}
-        {!isAuthenticated && (
-          <>
-            <Button color="inherit" component={Link} to="/login">
-              Iniciar Sesión
-            </Button>
-            <Button color="inherit" component={Link} to="/register">
-              Registrarse
-            </Button>
-          </>
-        )}
-        {isAuthenticated && (
-          <Button color="inherit" onClick={handleLogout}>
-            Cerrar Sesión
-          </Button>
-        )}
-      </Toolbar>
-    </AppBar>
+    <nav style={{ background: '#343a40', padding: '0.5rem 1rem', color: '#fff' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Biblioteca</span>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <Link to="/books" style={navLinkStyle}>Libros</Link>
+          <Link to="/books/new" style={navLinkStyle}>Agregar Libro</Link>
+          {isAuthenticated && (
+            <Link to="/users" style={navLinkStyle}>Usuarios</Link>
+          )}
+          {isAuthenticated && (
+            <Link to="/reportes" style={navLinkStyle}>Reportes</Link>
+          )}
+          {!isAuthenticated && (
+            <>
+              <Link to="/login" style={navLinkStyle}>Iniciar Sesión</Link>
+              <Link to="/register" style={navLinkStyle}>Registrarse</Link>
+            </>
+          )}
+          {isAuthenticated && (
+            <button onClick={handleLogout} style={{ ...navLinkStyle, background: 'transparent', border: 'none', cursor: 'pointer' }}>
+              Cerrar Sesión
+            </button>
+          )}
+        </div>
+      </div>
+    </nav>
   );
 }
 
 export default Navbar;
+
+// Estilo para los enlaces de navegación
+const navLinkStyle = {
+  color: '#fff',
+  textDecoration: 'none',
+  padding: '0.5rem 1rem',
+  borderRadius: '4px',
+  transition: 'background 0.2s',
+  fontSize: '1rem',
+};

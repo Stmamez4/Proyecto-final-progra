@@ -4,7 +4,7 @@ import axios from 'axios';
 const API_BASE = 'http://localhost:5000/reports';
 
 const ReportingPage = () => {
-  const [reportType, setReportType] = useState('book'); // 'book' o 'user'
+  const [reportType, setReportType] = useState('book');
   const [filters, setFilters] = useState({});
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);

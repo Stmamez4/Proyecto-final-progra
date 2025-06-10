@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, Button, Box, Typography } from "@mui/material";
 import apiClient from "../api/apiClient";
 
 const schema = yup.object({
@@ -35,60 +34,66 @@ const RegisterPage = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 400, mx: "auto", mt: 5 }}>
-      <Typography variant="h4" textAlign="center" mb={3}>Registrar Cuenta</Typography>
-      <TextField
-        fullWidth
-        label="Nombre"
-        {...register("nombre")}
-        error={!!errors.nombre}
-        helperText={errors.nombre?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Apellido"
-        {...register("apellido")}
-        error={!!errors.apellido}
-        helperText={errors.apellido?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Correo Electrónico"
-        {...register("correo")}
-        error={!!errors.correo}
-        helperText={errors.correo?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Contraseña"
-        type="password"
-        {...register("password")}
-        error={!!errors.password}
-        helperText={errors.password?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Número de Identificación"
-        {...register("numero_identificacion")}
-        error={!!errors.numero_identificacion}
-        helperText={errors.numero_identificacion?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Rol (ID)"
-        type="number"
-        {...register("rol_id")}
-        error={!!errors.rol_id}
-        helperText={errors.rol_id?.message}
-        margin="normal"
-      />
-      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>Registrar</Button>
-    </Box>
+    <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 400, margin: '40px auto', padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Registrar Cuenta</h2>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: 'block', marginBottom: 4 }}>Nombre</label>
+        <input
+          type="text"
+          {...register("nombre")}
+          style={{ width: '100%', padding: 8, border: errors.nombre ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.nombre && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.nombre.message}</span>}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: 'block', marginBottom: 4 }}>Apellido</label>
+        <input
+          type="text"
+          {...register("apellido")}
+          style={{ width: '100%', padding: 8, border: errors.apellido ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.apellido && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.apellido.message}</span>}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: 'block', marginBottom: 4 }}>Correo Electrónico</label>
+        <input
+          type="email"
+          {...register("correo")}
+          style={{ width: '100%', padding: 8, border: errors.correo ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.correo && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.correo.message}</span>}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: 'block', marginBottom: 4 }}>Contraseña</label>
+        <input
+          type="password"
+          {...register("password")}
+          style={{ width: '100%', padding: 8, border: errors.password ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.password && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.password.message}</span>}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: 'block', marginBottom: 4 }}>Número de Identificación</label>
+        <input
+          type="text"
+          {...register("numero_identificacion")}
+          style={{ width: '100%', padding: 8, border: errors.numero_identificacion ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.numero_identificacion && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.numero_identificacion.message}</span>}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: 'block', marginBottom: 4 }}>Rol (ID)</label>
+        <input
+          type="number"
+          {...register("rol_id")}
+          style={{ width: '100%', padding: 8, border: errors.rol_id ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.rol_id && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.rol_id.message}</span>}
+      </div>
+      <button type="submit" style={{ width: '100%', padding: '10px 0', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', fontSize: 16, cursor: 'pointer' }}>
+        Registrar
+      </button>
+    </form>
   );
 };
 

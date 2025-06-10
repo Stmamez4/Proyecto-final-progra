@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import UserTable from "../components/tables/UserTable";
 import UserForm from "../components/forms/UserForm";
 import apiClient from "../api/apiClient";
-import { Button, Dialog, DialogContent, DialogTitle, Box, Typography } from "@mui/material";
 
 const mapUserFromApi = (user) => ({
   id: user.id,
@@ -73,27 +72,33 @@ const UserListPage = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 900, mx: "auto", mt: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h4">Usuarios</Typography>
-        <Button variant="contained" color="primary" onClick={handleAdd}>
+    <div style={{ maxWidth: 900, margin: '40px auto', padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <h2 style={{ margin: 0 }}>Usuarios</h2>
+        <button
+          onClick={handleAdd}
+          style={{ padding: '8px 20px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+        >
           Agregar Usuario
-        </Button>
-      </Box>
+        </button>
+      </div>
       {error && (
-        <Typography color="error" mb={2}>{error}</Typography>
+        <div style={{ color: '#d32f2f', marginBottom: 16 }}>{error}</div>
       )}
       <UserTable users={users} onEdit={handleEdit} onDelete={handleDelete} />
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>{editingUser ? "Editar Usuario" : "Agregar Usuario"}</DialogTitle>
-        <DialogContent>
-          <UserForm
-            initialData={editingUser || {}}
-            onSubmit={handleFormSubmit}
-          />
-        </DialogContent>
-      </Dialog>
-    </Box>
+      {open && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#0008', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', borderRadius: 8, padding: 32, minWidth: 350, maxWidth: 400, boxShadow: '0 2px 16px #0003', position: 'relative' }}>
+            <button onClick={() => setOpen(false)} style={{ position: 'absolute', top: 8, right: 8, background: 'transparent', border: 'none', fontSize: 20, cursor: 'pointer', color: '#888' }}>×</button>
+            <h3 style={{ marginTop: 0 }}>{editingUser ? 'Editar Usuario' : 'Agregar Usuario'}</h3>
+            <UserForm
+              initialData={editingUser || {}}
+              onSubmit={handleFormSubmit}
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

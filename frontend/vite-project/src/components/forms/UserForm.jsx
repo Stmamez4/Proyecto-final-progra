@@ -1,6 +1,3 @@
-
-import { TextField, Button, Box, Typography } from "@mui/material";
-
 const UserForm = ({ onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
     firstName: initialData.firstName || "",
@@ -39,65 +36,66 @@ const UserForm = ({ onSubmit, initialData = {} }) => {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ maxWidth: 400, margin: "auto", display: "flex", flexDirection: "column", gap: 2 }}
-    >
-      <Typography variant="h5">{initialData.id ? "Editar Usuario" : "Agregar Usuario"}</Typography>
-
-      <TextField
-        label="Nombre"
-        name="firstName"
-        value={formData.firstName}
-        onChange={handleChange}
-        error={!!errors.firstName}
-        helperText={errors.firstName}
-        fullWidth
-      />
-
-      <TextField
-        label="Apellido"
-        name="lastName"
-        value={formData.lastName}
-        onChange={handleChange}
-        error={!!errors.lastName}
-        helperText={errors.lastName}
-        fullWidth
-      />
-
-      <TextField
-        label="Correo Electrónico"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        error={!!errors.email}
-        helperText={errors.email}
-        fullWidth
-      />
-
-      <TextField
-        label="Teléfono"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        fullWidth
-      />
-
-      <TextField
-        label="Número de Identificación"
-        name="idNumber"
-        value={formData.idNumber}
-        onChange={handleChange}
-        error={!!errors.idNumber}
-        helperText={errors.idNumber}
-        fullWidth
-      />
-
-      <Button type="submit" variant="contained" color="primary">
-        {initialData.id ? "Guardar Cambios" : "Agregar Usuario"}
-      </Button>
-    </Box>
+    <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16, padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
+      <h3 style={{ textAlign: 'center', marginBottom: 16 }}>{initialData.id ? 'Editar Usuario' : 'Agregar Usuario'}</h3>
+      <div>
+        <label style={{ display: 'block', marginBottom: 4 }}>Nombre</label>
+        <input
+          type="text"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleChange}
+          style={{ width: '100%', padding: 8, border: errors.firstName ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.firstName && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.firstName}</span>}
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: 4 }}>Apellido</label>
+        <input
+          type="text"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleChange}
+          style={{ width: '100%', padding: 8, border: errors.lastName ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.lastName && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.lastName}</span>}
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: 4 }}>Correo Electrónico</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          style={{ width: '100%', padding: 8, border: errors.email ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.email && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.email}</span>}
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: 4 }}>Teléfono</label>
+        <input
+          type="text"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          style={{ width: '100%', padding: 8, border: '1px solid #ccc', borderRadius: 4 }}
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: 4 }}>Número de Identificación</label>
+        <input
+          type="text"
+          name="idNumber"
+          value={formData.idNumber}
+          onChange={handleChange}
+          style={{ width: '100%', padding: 8, border: errors.idNumber ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.idNumber && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.idNumber}</span>}
+      </div>
+      <button type="submit" style={{ width: '100%', padding: '10px 0', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', fontSize: 16, cursor: 'pointer' }}>
+        {initialData.id ? 'Guardar Cambios' : 'Agregar Usuario'}
+      </button>
+    </form>
   );
 };
 

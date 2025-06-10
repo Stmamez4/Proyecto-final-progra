@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from modules.models import User
-from app import db
+from modules.db import db  # Cambiado: importar db desde modules.db
 
 users_blueprint = Blueprint('users', __name__)
 
@@ -38,15 +38,3 @@ def delete_user(id):
     db.session.delete(user)
     db.session.commit()
     return jsonify({"message": "Usuario eliminado exitosamente"}), 200
-
-# Ejemplo de respuesta recomendada para error y éxito
-# { "message": "Usuario creado exitosamente" }
-# { "error": "El correo ya está registrado" }
-
-# Ejemplo de respuesta recomendada para listado
-# [
-#   { "id": 1, "name": "Juan", "email": "juan@mail.com", "role": "admin" }
-# ]
-
-# Ejemplo de respuesta recomendada para login
-# { "token": "jwt_token_aqui" }

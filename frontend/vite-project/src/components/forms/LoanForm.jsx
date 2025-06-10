@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, Typography, MenuItem } from "@mui/material";
 import apiClient from "../../api/apiClient";
 
 const LoanForm = ({ onSuccess, initialData = {}, users = [], books = [] }) => {
@@ -42,74 +41,135 @@ const LoanForm = ({ onSuccess, initialData = {}, users = [], books = [] }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 400, mx: "auto", mt: 5 }}>
-      <Typography variant="h5" textAlign="center" mb={3}>
+    <form
+      onSubmit={handleSubmit}
+      style={{
+        maxWidth: 400,
+        margin: "40px auto",
+        padding: 24,
+        background: "#fff",
+        borderRadius: 8,
+        boxShadow: "0 2px 8px #0001",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+      }}
+    >
+      <h3
+        style={{
+          textAlign: "center",
+          marginBottom: 24,
+        }}
+      >
         {initialData.id ? "Editar Préstamo" : "Nuevo Préstamo"}
-      </Typography>
-      <TextField
-        fullWidth
-        select
-        label="Usuario"
-        name="userId"
-        value={formData.userId}
-        onChange={handleChange}
-        error={!!errors.userId}
-        helperText={errors.userId}
-        margin="normal"
+      </h3>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", marginBottom: 4 }}>Usuario</label>
+        <select
+          name="userId"
+          value={formData.userId}
+          onChange={handleChange}
+          style={{
+            width: "100%",
+            padding: 8,
+            border: errors.userId ? "1px solid #d32f2f" : "1px solid #ccc",
+            borderRadius: 4,
+          }}
+        >
+          <option value="">Selecciona un usuario</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name || `${user.nombre} ${user.apellido}`}
+            </option>
+          ))}
+        </select>
+        {errors.userId && (
+          <span style={{ color: "#d32f2f", fontSize: 13 }}>{errors.userId}</span>
+        )}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", marginBottom: 4 }}>Libro</label>
+        <select
+          name="bookId"
+          value={formData.bookId}
+          onChange={handleChange}
+          style={{
+            width: "100%",
+            padding: 8,
+            border: errors.bookId ? "1px solid #d32f2f" : "1px solid #ccc",
+            borderRadius: 4,
+          }}
+        >
+          <option value="">Selecciona un libro</option>
+          {books.map((book) => (
+            <option key={book.id} value={book.id}>
+              {book.title || book.titulo}
+            </option>
+          ))}
+        </select>
+        {errors.bookId && (
+          <span style={{ color: "#d32f2f", fontSize: 13 }}>{errors.bookId}</span>
+        )}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", marginBottom: 4 }}>Fecha de Préstamo</label>
+        <input
+          type="date"
+          name="loanDate"
+          value={formData.loanDate}
+          onChange={handleChange}
+          style={{
+            width: "100%",
+            padding: 8,
+            border: "1px solid #ccc",
+            borderRadius: 4,
+          }}
+          disabled={!!initialData.id}
+        />
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", marginBottom: 4 }}>Fecha de Devolución</label>
+        <input
+          type="date"
+          name="returnDate"
+          value={formData.returnDate}
+          onChange={handleChange}
+          style={{
+            width: "100%",
+            padding: 8,
+            border: "1px solid #ccc",
+            borderRadius: 4,
+          }}
+        />
+      </div>
+      <button
+        type="submit"
+        style={{
+          width: "100%",
+          padding: "10px 0",
+          background: "#1976d2",
+          color: "#fff",
+          border: "none",
+          borderRadius: 4,
+          fontWeight: "bold",
+          fontSize: 16,
+          cursor: "pointer",
+        }}
       >
-        {users.map((user) => (
-          <MenuItem key={user.id} value={user.id}>
-            {user.name || `${user.nombre} ${user.apellido}`}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        fullWidth
-        select
-        label="Libro"
-        name="bookId"
-        value={formData.bookId}
-        onChange={handleChange}
-        error={!!errors.bookId}
-        helperText={errors.bookId}
-        margin="normal"
-      >
-        {books.map((book) => (
-          <MenuItem key={book.id} value={book.id}>
-            {book.title || book.titulo}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        fullWidth
-        type="date"
-        label="Fecha de Préstamo"
-        name="loanDate"
-        value={formData.loanDate}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-        disabled={!!initialData.id}
-      />
-      <TextField
-        fullWidth
-        type="date"
-        label="Fecha de Devolución"
-        name="returnDate"
-        value={formData.returnDate}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-      />
-      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>
         Guardar
-      </Button>
+      </button>
       {errors.message && (
-        <Typography color="error" mt={2} textAlign="center">
+        <div
+          style={{
+            color: "#d32f2f",
+            marginTop: 16,
+            textAlign: "center",
+          }}
+        >
           {errors.message}
-        </Typography>
+        </div>
       )}
-    </Box>
+    </form>
   );
 };
 

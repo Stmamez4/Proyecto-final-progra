@@ -1,18 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Box,
-  IconButton,
-  TablePagination,
-  TextField,
-} from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
+import React, { useEffect, useState } from "react";
 import apiClient from "../../api/apiClient";
 
 const LoanTable = ({ onEdit }) => {
@@ -73,58 +59,91 @@ const LoanTable = ({ onEdit }) => {
   };
 
   return (
-    <>
-      <TextField
-        label="Buscar"
-        variant="outlined"
+    <div style={{ marginTop: 24 }}>
+      <input
+        type="text"
+        placeholder="Buscar por usuario o libro"
         value={search}
         onChange={handleSearchChange}
-        fullWidth
-        sx={{ marginBottom: 2, marginTop: 2 }}
+        style={{ width: '100%', padding: 8, marginBottom: 16, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
       />
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Usuario</TableCell>
-              <TableCell>Libro</TableCell>
-              <TableCell>Fecha de Préstamo</TableCell>
-              <TableCell>Fecha de Devolución</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
+          <thead>
+            <tr style={{ background: '#f5f5f5' }}>
+              <th style={thStyle}>Usuario</th>
+              <th style={thStyle}>Libro</th>
+              <th style={thStyle}>Fecha de Préstamo</th>
+              <th style={thStyle}>Fecha de Devolución</th>
+              <th style={thStyle}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
             {paginatedLoans.map((loan) => (
-              <TableRow key={loan.id}>
-                <TableCell>{loan.user?.name}</TableCell>
-                <TableCell>{loan.book?.title}</TableCell>
-                <TableCell>{loan.borrow_date || loan.borrowDate}</TableCell>
-                <TableCell>{loan.return_date || loan.returnDate || "Pendiente"}</TableCell>
-                <TableCell>
-                  <Box display="flex" gap={1}>
-                    <IconButton color="primary" onClick={() => onEdit(loan)}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton color="secondary" onClick={() => handleDelete(loan.id)}>
-                      <Delete />
-                    </IconButton>
-                  </Box>
-                </TableCell>
-              </TableRow>
+              <tr key={loan.id}>
+                <td style={tdStyle}>{loan.user?.name}</td>
+                <td style={tdStyle}>{loan.book?.title}</td>
+                <td style={tdStyle}>{loan.borrow_date || loan.borrowDate}</td>
+                <td style={tdStyle}>{loan.return_date || loan.returnDate || "Pendiente"}</td>
+                <td style={tdStyle}>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button
+                      onClick={() => onEdit(loan)}
+                      style={{ padding: '4px 12px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                      title="Editar"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => handleDelete(loan.id)}
+                      style={{ padding: '4px 12px', background: '#fff', color: '#d32f2f', border: '1px solid #d32f2f', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                      title="Eliminar"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        component="div"
-        count={filteredLoans.length}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </>
+          </tbody>
+        </table>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16 }}>
+        <span style={{ fontSize: 15 }}>
+          Mostrando {page * rowsPerPage + 1} - {Math.min((page + 1) * rowsPerPage, filteredLoans.length)} de {filteredLoans.length}
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            onClick={() => setPage(Math.max(0, page - 1))}
+            disabled={page === 0}
+            style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #ccc', background: '#eee', cursor: page === 0 ? 'not-allowed' : 'pointer' }}
+          >
+            Anterior
+          </button>
+          <span style={{ fontSize: 15 }}>Página {page + 1}</span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={(page + 1) * rowsPerPage >= filteredLoans.length}
+            style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #ccc', background: '#eee', cursor: (page + 1) * rowsPerPage >= filteredLoans.length ? 'not-allowed' : 'pointer' }}
+          >
+            Siguiente
+          </button>
+          <select
+            value={rowsPerPage}
+            onChange={handleChangeRowsPerPage}
+            style={{ padding: '4px 8px', borderRadius: 4, border: '1px solid #ccc', background: '#fff', fontSize: 15 }}
+          >
+            {[5, 10, 25, 50].map((n) => (
+              <option key={n} value={n}>{n} por página</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
   );
 };
+
+const thStyle = { padding: 10, borderBottom: '2px solid #eee', textAlign: 'left' };
+const tdStyle = { padding: 10, borderBottom: '1px solid #eee' };
 
 export default LoanTable;

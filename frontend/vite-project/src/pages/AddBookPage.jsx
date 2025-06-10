@@ -1,6 +1,5 @@
 import BookForm from "../components/forms/BookForm";
-import apiClient from "../../api/apiClient";
-import { Button, Box } from "@mui/material";
+import apiClient from "../api/apiClient";
 
 function AddBookPage({ navigateToList }) {
   const handleAddBook = async (data) => {
@@ -15,18 +14,33 @@ function AddBookPage({ navigateToList }) {
   };
 
   return (
-    <Box sx={{ maxWidth: 500, margin: "auto", mt: 4 }}>
+    <div
+      style={{
+        maxWidth: 500,
+        margin: "40px auto",
+        padding: 24,
+        background: "#fff",
+        borderRadius: 8,
+        boxShadow: "0 2px 8px #0001",
+      }}
+    >
       <h1>Agregar Libro</h1>
       <BookForm onSubmit={handleAddBook} />
-      <Button
-        variant="outlined"
-        color="secondary"
-        sx={{ mt: 2 }}
+      <button
         onClick={navigateToList}
+        style={{
+          marginTop: 16,
+          padding: "8px 20px",
+          background: "#eee",
+          color: "#333",
+          border: "1px solid #bbb",
+          borderRadius: 4,
+          cursor: "pointer",
+        }}
       >
         Volver a la lista
-      </Button>
-    </Box>
+      </button>
+    </div>
   );
 }
 

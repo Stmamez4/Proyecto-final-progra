@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, Button, Box, Typography } from "@mui/material";
 import apiClient from "../api/apiClient";
 import { useNavigate } from "react-router-dom";
 
@@ -27,27 +26,30 @@ const LoginPage = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 400, mx: "auto", mt: 5 }}>
-      <Typography variant="h4" textAlign="center" mb={3}>Iniciar Sesión</Typography>
-      <TextField
-        fullWidth
-        label="Correo Electrónico"
-        {...register("email")}
-        error={!!errors.email}
-        helperText={errors.email?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Contraseña"
-        type="password"
-        {...register("password")}
-        error={!!errors.password}
-        helperText={errors.password?.message}
-        margin="normal"
-      />
-      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>Iniciar Sesión</Button>
-    </Box>
+    <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 400, margin: '40px auto', padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Iniciar Sesión</h2>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: 'block', marginBottom: 4 }}>Correo Electrónico</label>
+        <input
+          type="email"
+          {...register("email")}
+          style={{ width: '100%', padding: 8, border: errors.email ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.email && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.email.message}</span>}
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: 'block', marginBottom: 4 }}>Contraseña</label>
+        <input
+          type="password"
+          {...register("password")}
+          style={{ width: '100%', padding: 8, border: errors.password ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
+        />
+        {errors.password && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.password.message}</span>}
+      </div>
+      <button type="submit" style={{ width: '100%', padding: '10px 0', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', fontSize: 16, cursor: 'pointer' }}>
+        Iniciar Sesión
+      </button>
+    </form>
   );
 };
 

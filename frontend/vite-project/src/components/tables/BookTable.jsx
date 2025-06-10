@@ -1,15 +1,4 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Box,
-} from "@mui/material";
 import apiClient from "../../api/apiClient";
 
 const BookTable = ({ onEdit }) => {
@@ -39,49 +28,49 @@ const BookTable = ({ onEdit }) => {
   }, []);
 
   return (
-    <TableContainer component={Paper} sx={{ mt: 4 }}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Título</TableCell>
-            <TableCell>Autor</TableCell>
-            <TableCell>ISBN</TableCell>
-            <TableCell>Cantidad</TableCell>
-            <TableCell>Acciones</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
+    <div style={{ marginTop: 32, overflowX: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
+        <thead>
+          <tr style={{ background: '#f5f5f5' }}>
+            <th style={thStyle}>Título</th>
+            <th style={thStyle}>Autor</th>
+            <th style={thStyle}>ISBN</th>
+            <th style={thStyle}>Cantidad</th>
+            <th style={thStyle}>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
           {books.map((book) => (
-            <TableRow key={book.id}>
-              <TableCell>{book.title}</TableCell>
-              <TableCell>{book.author}</TableCell>
-              <TableCell>{book.isbn}</TableCell>
-              <TableCell>{book.quantity}</TableCell>
-              <TableCell>
-                <Box display="flex" gap={1}>
-                  <Button
-                    variant="contained"
-                    size="small"
+            <tr key={book.id}>
+              <td style={tdStyle}>{book.title}</td>
+              <td style={tdStyle}>{book.author}</td>
+              <td style={tdStyle}>{book.isbn}</td>
+              <td style={tdStyle}>{book.quantity}</td>
+              <td style={tdStyle}>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
                     onClick={() => onEdit(book)}
+                    style={{ padding: '4px 12px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
                   >
                     Editar
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    color="error"
+                  </button>
+                  <button
                     onClick={() => handleDelete(book.id)}
+                    style={{ padding: '4px 12px', background: '#fff', color: '#d32f2f', border: '1px solid #d32f2f', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
                   >
                     Eliminar
-                  </Button>
-                </Box>
-              </TableCell>
-            </TableRow>
+                  </button>
+                </div>
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+        </tbody>
+      </table>
+    </div>
   );
 };
+
+const thStyle = { padding: 10, borderBottom: '2px solid #eee', textAlign: 'left' };
+const tdStyle = { padding: 10, borderBottom: '1px solid #eee' };
 
 export default BookTable;
