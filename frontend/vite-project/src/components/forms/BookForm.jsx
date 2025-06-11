@@ -2,7 +2,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, Button, Box, Typography } from "@mui/material";
 import apiClient from "../../api/apiClient";
 
 const schema = yup.object({
@@ -40,52 +39,69 @@ const BookForm = ({ onSuccess, book = {} }) => {
     }
   };
 
+  const userRole = localStorage.getItem('role');
+  const canSubmit = userRole === 'Gestor' || userRole === 'Administrador';
+
   return (
-    <Box
-      component="form"
+    <form
       onSubmit={handleSubmit(onSubmit)}
-      sx={{ maxWidth: 400, mx: "auto", mt: 5 }}
+      className="p-4 bg-white rounded shadow"
+      style={{ maxWidth: 400, margin: '40px auto' }}
     >
-      <Typography variant="h5" textAlign="center" mb={3}>
-        {book.id ? "Editar Libro" : "Nuevo Libro"}
-      </Typography>
-      <TextField
-        fullWidth
-        label="Título"
-        {...register("title")}
-        error={!!errors.title}
-        helperText={errors.title?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Autor"
-        {...register("author")}
-        error={!!errors.author}
-        helperText={errors.author?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="ISBN"
-        {...register("isbn")}
-        error={!!errors.isbn}
-        helperText={errors.isbn?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Cantidad"
-        type="number"
-        {...register("quantity")}
-        error={!!errors.quantity}
-        helperText={errors.quantity?.message}
-        margin="normal"
-      />
-      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>
+      <h3 className="text-center mb-4">{book.id ? "Editar Libro" : "Nuevo Libro"}</h3>
+      <div className="mb-3">
+        <label className="form-label">Título</label>
+        <input
+          type="text"
+          {...register("title")}
+          className={`form-control${errors.title ? ' is-invalid' : ''}`}
+        />
+        {errors.title && (
+          <div className="invalid-feedback">{errors.title.message}</div>
+        )}
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Autor</label>
+        <input
+          type="text"
+          {...register("author")}
+          className={`form-control${errors.author ? ' is-invalid' : ''}`}
+        />
+        {errors.author && (
+          <div className="invalid-feedback">{errors.author.message}</div>
+        )}
+      </div>
+      <div className="mb-3">
+        <label className="form-label">ISBN</label>
+        <input
+          type="text"
+          {...register("isbn")}
+          className={`form-control${errors.isbn ? ' is-invalid' : ''}`}
+        />
+        {errors.isbn && (
+          <div className="invalid-feedback">{errors.isbn.message}</div>
+        )}
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Cantidad</label>
+        <input
+          type="number"
+          {...register("quantity")}
+          className={`form-control${errors.quantity ? ' is-invalid' : ''}`}
+        />
+        {errors.quantity && (
+          <div className="invalid-feedback">{errors.quantity.message}</div>
+        )}
+      </div>
+      <button
+        type="submit"
+        className="btn btn-primary w-100 fw-bold fs-5"
+        disabled={!canSubmit}
+      >
         Guardar
-      </Button>
-    </Box>
+      </button>
+      {!canSubmit && <div className="text-danger mt-2 text-center">No tienes permisos para realizar esta acción.</div>}
+    </form>
   );
 };
 

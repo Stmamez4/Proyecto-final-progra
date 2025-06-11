@@ -1,5 +1,4 @@
-
-import { TextField, Button, Box, Typography } from "@mui/material";
+import React, { useState } from 'react';
 
 const UserForm = ({ onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
@@ -38,66 +37,71 @@ const UserForm = ({ onSubmit, initialData = {} }) => {
     }
   };
 
+  const userRole = localStorage.getItem('role');
+  const canSubmit = userRole === 'Gestor' || userRole === 'Administrador';
+
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ maxWidth: 400, margin: "auto", display: "flex", flexDirection: "column", gap: 2 }}
-    >
-      <Typography variant="h5">{initialData.id ? "Editar Usuario" : "Agregar Usuario"}</Typography>
-
-      <TextField
-        label="Nombre"
-        name="firstName"
-        value={formData.firstName}
-        onChange={handleChange}
-        error={!!errors.firstName}
-        helperText={errors.firstName}
-        fullWidth
-      />
-
-      <TextField
-        label="Apellido"
-        name="lastName"
-        value={formData.lastName}
-        onChange={handleChange}
-        error={!!errors.lastName}
-        helperText={errors.lastName}
-        fullWidth
-      />
-
-      <TextField
-        label="Correo Electrónico"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        error={!!errors.email}
-        helperText={errors.email}
-        fullWidth
-      />
-
-      <TextField
-        label="Teléfono"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        fullWidth
-      />
-
-      <TextField
-        label="Número de Identificación"
-        name="idNumber"
-        value={formData.idNumber}
-        onChange={handleChange}
-        error={!!errors.idNumber}
-        helperText={errors.idNumber}
-        fullWidth
-      />
-
-      <Button type="submit" variant="contained" color="primary">
-        {initialData.id ? "Guardar Cambios" : "Agregar Usuario"}
-      </Button>
-    </Box>
+    <form onSubmit={handleSubmit} className="p-4 bg-white rounded shadow" style={{ maxWidth: 400, margin: '0 auto' }}>
+      <h3 className="text-center mb-3">{initialData.id ? 'Editar Usuario' : 'Agregar Usuario'}</h3>
+      <div className="mb-3">
+        <label className="form-label">Nombre</label>
+        <input
+          type="text"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleChange}
+          className={`form-control${errors.firstName ? ' is-invalid' : ''}`}
+        />
+        {errors.firstName && <div className="invalid-feedback">{errors.firstName}</div>}
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Apellido</label>
+        <input
+          type="text"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleChange}
+          className={`form-control${errors.lastName ? ' is-invalid' : ''}`}
+        />
+        {errors.lastName && <div className="invalid-feedback">{errors.lastName}</div>}
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Correo Electrónico</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className={`form-control${errors.email ? ' is-invalid' : ''}`}
+        />
+        {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Teléfono</label>
+        <input
+          type="text"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          className="form-control"
+        />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Número de Identificación</label>
+        <input
+          type="text"
+          name="idNumber"
+          value={formData.idNumber}
+          onChange={handleChange}
+          className={`form-control${errors.idNumber ? ' is-invalid' : ''}`}
+        />
+        {errors.idNumber && <div className="invalid-feedback">{errors.idNumber}</div>}
+      </div>
+      <button type="submit" className="btn btn-primary w-100 fw-bold fs-5" disabled={!canSubmit}>
+        {initialData.id ? 'Guardar Cambios' : 'Agregar Usuario'}
+      </button>
+      {!canSubmit && <div className="text-danger mt-2 text-center">No tienes permisos para realizar esta acción.</div>}
+    </form>
   );
 };
 

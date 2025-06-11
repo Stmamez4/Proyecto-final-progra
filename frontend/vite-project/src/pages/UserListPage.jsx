@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import UserTable from "../components/tables/UserTable";
 import UserForm from "../components/forms/UserForm";
 import apiClient from "../api/apiClient";
-import { Button, Dialog, DialogContent, DialogTitle, Box, Typography } from "@mui/material";
 
 const mapUserFromApi = (user) => ({
   id: user.id,
@@ -72,28 +71,48 @@ const UserListPage = () => {
     }
   };
 
+  const userRole = localStorage.getItem('role');
+  if (userRole !== 'Gestor' && userRole !== 'Administrador') {
+    return (
+      <div className="container d-flex flex-column align-items-center justify-content-center" style={{ maxWidth: 600, marginTop: 60 }}>
+        <div className="bg-white rounded shadow p-4 w-100 text-center">
+          <h2>Acceso denegado</h2>
+          <p>No tienes permisos para ver la gestión de usuarios.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <Box sx={{ maxWidth: 900, mx: "auto", mt: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h4">Usuarios</Typography>
-        <Button variant="contained" color="primary" onClick={handleAdd}>
+    <div className="container" style={{ maxWidth: 900, marginTop: 40 }}>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2 className="mb-0">Usuarios</h2>
+        <button
+          onClick={handleAdd}
+          className="btn btn-primary fw-bold"
+        >
           Agregar Usuario
-        </Button>
-      </Box>
+        </button>
+      </div>
       {error && (
-        <Typography color="error" mb={2}>{error}</Typography>
+        <div className="alert alert-danger mb-3">{error}</div>
       )}
       <UserTable users={users} onEdit={handleEdit} onDelete={handleDelete} />
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>{editingUser ? "Editar Usuario" : "Agregar Usuario"}</DialogTitle>
-        <DialogContent>
-          <UserForm
-            initialData={editingUser || {}}
-            onSubmit={handleFormSubmit}
-          />
-        </DialogContent>
-      </Dialog>
-    </Box>
+      {open && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ background: '#0008' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content p-4 position-relative">
+              <button type="button" className="btn-close position-absolute end-0 top-0 m-3" aria-label="Cerrar" onClick={() => setOpen(false)}></button>
+              <h3 className="mb-3">{editingUser ? 'Editar Usuario' : 'Agregar Usuario'}</h3>
+              <UserForm
+                initialData={editingUser || {}}
+                onSubmit={handleFormSubmit}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

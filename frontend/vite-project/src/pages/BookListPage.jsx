@@ -1,25 +1,20 @@
 import BookTable from "../components/tables/BookTable";
 import { useNavigate } from "react-router-dom";
-import { Button, Box, Typography } from "@mui/material";
 
 function BookListPage() {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ maxWidth: 1000, margin: "auto", mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Lista de Libros
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
+    <div className="container" style={{ maxWidth: 1000, marginTop: 40 }}>
+      <h2 className="mb-4">Lista de Libros</h2>
+      <button
         onClick={() => navigate("/books/new")}
-        sx={{ mb: 2 }}
+        className="btn btn-primary fw-bold mb-3"
       >
         Agregar Libro
-      </Button>
+      </button>
       <BookTable />
-    </Box>
+    </div>
   );
 }
 

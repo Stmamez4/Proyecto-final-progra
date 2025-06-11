@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, Button, Box, Typography } from "@mui/material";
 import apiClient from "../api/apiClient";
+import { useEffect, useState } from "react";
 
 const schema = yup.object({
   nombre: yup.string().required("El nombre es obligatorio"),
@@ -14,9 +14,18 @@ const schema = yup.object({
 });
 
 const RegisterPage = () => {
+  const [roles, setRoles] = useState([]);
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    apiClient.get("/roles").then(res => {
+      setRoles(res.data);
+    }).catch(() => {
+      setRoles([]);
+    });
+  }, []);
 
   const onSubmit = async (data) => {
     try {
@@ -35,60 +44,73 @@ const RegisterPage = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 400, mx: "auto", mt: 5 }}>
-      <Typography variant="h4" textAlign="center" mb={3}>Registrar Cuenta</Typography>
-      <TextField
-        fullWidth
-        label="Nombre"
-        {...register("nombre")}
-        error={!!errors.nombre}
-        helperText={errors.nombre?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Apellido"
-        {...register("apellido")}
-        error={!!errors.apellido}
-        helperText={errors.apellido?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Correo Electrónico"
-        {...register("correo")}
-        error={!!errors.correo}
-        helperText={errors.correo?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Contraseña"
-        type="password"
-        {...register("password")}
-        error={!!errors.password}
-        helperText={errors.password?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Número de Identificación"
-        {...register("numero_identificacion")}
-        error={!!errors.numero_identificacion}
-        helperText={errors.numero_identificacion?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Rol (ID)"
-        type="number"
-        {...register("rol_id")}
-        error={!!errors.rol_id}
-        helperText={errors.rol_id?.message}
-        margin="normal"
-      />
-      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>Registrar</Button>
-    </Box>
+    <div className="container" style={{ maxWidth: 400, marginTop: 40 }}>
+      <form onSubmit={handleSubmit(onSubmit)} className="p-4 bg-white rounded shadow">
+        <h2 className="text-center mb-4">Registrar Cuenta</h2>
+        <div className="mb-3">
+          <label className="form-label">Nombre</label>
+          <input
+            type="text"
+            {...register("nombre")}
+            className={`form-control${errors.nombre ? " is-invalid" : ""}`}
+          />
+          {errors.nombre && <div className="invalid-feedback">{errors.nombre.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Apellido</label>
+          <input
+            type="text"
+            {...register("apellido")}
+            className={`form-control${errors.apellido ? " is-invalid" : ""}`}
+          />
+          {errors.apellido && <div className="invalid-feedback">{errors.apellido.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Correo Electrónico</label>
+          <input
+            type="email"
+            {...register("correo")}
+            className={`form-control${errors.correo ? " is-invalid" : ""}`}
+          />
+          {errors.correo && <div className="invalid-feedback">{errors.correo.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Contraseña</label>
+          <input
+            type="password"
+            {...register("password")}
+            className={`form-control${errors.password ? " is-invalid" : ""}`}
+          />
+          {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Número de Identificación</label>
+          <input
+            type="text"
+            {...register("numero_identificacion")}
+            className={`form-control${errors.numero_identificacion ? " is-invalid" : ""}`}
+          />
+          {errors.numero_identificacion && <div className="invalid-feedback">{errors.numero_identificacion.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Rol</label>
+          <select
+            {...register("rol_id")}
+            className={`form-select${errors.rol_id ? " is-invalid" : ""}`}
+            defaultValue=""
+          >
+            <option value="" disabled>Selecciona un rol</option>
+            {roles.map((rol) => (
+              <option key={rol.id} value={rol.id}>{rol.name}</option>
+            ))}
+          </select>
+          {errors.rol_id && <div className="invalid-feedback">{errors.rol_id.message}</div>}
+        </div>
+        <button type="submit" className="btn btn-primary w-100 fw-bold fs-5">
+          Registrar
+        </button>
+      </form>
+    </div>
   );
 };
 

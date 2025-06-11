@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, Button, Box, Typography } from "@mui/material";
 import apiClient from "../api/apiClient";
 import { useNavigate } from "react-router-dom";
+import * as jwt_decode from "jwt-decode";
 
 const schema = yup.object({
   email: yup.string().email("Debe ser un correo válido").required("El correo es obligatorio"),
@@ -20,6 +20,11 @@ const LoginPage = () => {
     try {
       const response = await apiClient.post("/auth/login", data);
       localStorage.setItem("token", response.data.token);
+      const decoded = jwt_decode.default(response.data.token);
+      const userRole = decoded.role || (decoded.sub && decoded.sub.role) || (decoded.identity && decoded.identity.role);
+      if (userRole) {
+        localStorage.setItem("role", userRole);
+      }
       navigate("/books");
     } catch (error) {
       alert("Error al iniciar sesión: " + (error.response?.data?.error || "Error desconocido"));
@@ -27,27 +32,32 @@ const LoginPage = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 400, mx: "auto", mt: 5 }}>
-      <Typography variant="h4" textAlign="center" mb={3}>Iniciar Sesión</Typography>
-      <TextField
-        fullWidth
-        label="Correo Electrónico"
-        {...register("email")}
-        error={!!errors.email}
-        helperText={errors.email?.message}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Contraseña"
-        type="password"
-        {...register("password")}
-        error={!!errors.password}
-        helperText={errors.password?.message}
-        margin="normal"
-      />
-      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>Iniciar Sesión</Button>
-    </Box>
+    <div className="container" style={{ maxWidth: 400, marginTop: 40 }}>
+      <form onSubmit={handleSubmit(onSubmit)} className="p-4 bg-white rounded shadow">
+        <h2 className="text-center mb-4">Iniciar Sesión</h2>
+        <div className="mb-3">
+          <label className="form-label">Correo Electrónico</label>
+          <input
+            type="email"
+            {...register("email")}
+            className={`form-control${errors.email ? " is-invalid" : ""}`}
+          />
+          {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Contraseña</label>
+          <input
+            type="password"
+            {...register("password")}
+            className={`form-control${errors.password ? " is-invalid" : ""}`}
+          />
+          {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
+        </div>
+        <button type="submit" className="btn btn-primary w-100 fw-bold fs-5">
+          Iniciar Sesión
+        </button>
+      </form>
+    </div>
   );
 };
 

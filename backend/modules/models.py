@@ -1,6 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from modules.db import db
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -39,5 +37,6 @@ class Loan(db.Model):
     libro_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
     fecha_prestamo = db.Column(db.Date, nullable=False)
     fecha_devolucion = db.Column(db.Date, nullable=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
     usuario = db.relationship('User', back_populates='prestamos')
     libro = db.relationship('Book', back_populates='prestamos')

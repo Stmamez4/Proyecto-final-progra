@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, Typography, MenuItem } from "@mui/material";
 import apiClient from "../../api/apiClient";
 
 const LoanForm = ({ onSuccess, initialData = {}, users = [], books = [] }) => {
@@ -41,75 +40,93 @@ const LoanForm = ({ onSuccess, initialData = {}, users = [], books = [] }) => {
     }
   };
 
+  const userRole = localStorage.getItem('role');
+  const canSubmit = userRole === 'Gestor' || userRole === 'Administrador';
+
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 400, mx: "auto", mt: 5 }}>
-      <Typography variant="h5" textAlign="center" mb={3}>
-        {initialData.id ? "Editar Préstamo" : "Nuevo Préstamo"}
-      </Typography>
-      <TextField
-        fullWidth
-        select
-        label="Usuario"
-        name="userId"
-        value={formData.userId}
-        onChange={handleChange}
-        error={!!errors.userId}
-        helperText={errors.userId}
-        margin="normal"
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 bg-white rounded shadow"
+      style={{ maxWidth: 400, margin: '40px auto' }}
+    >
+      <h3 className="text-center mb-4">{initialData.id ? "Editar Préstamo" : "Nuevo Préstamo"}</h3>
+      <div className="mb-3">
+        <label className="form-label">Usuario</label>
+        <select
+          name="userId"
+          value={formData.userId}
+          onChange={handleChange}
+          className={`form-select${errors.userId ? ' is-invalid' : ''}`}
+        >
+          <option value="">Selecciona un usuario</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name || `${user.nombre} ${user.apellido}`}
+            </option>
+          ))}
+        </select>
+        {errors.userId && (
+          <div className="invalid-feedback">{errors.userId}</div>
+        )}
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Libro</label>
+        <select
+          name="bookId"
+          value={formData.bookId}
+          onChange={handleChange}
+          className={`form-select${errors.bookId ? ' is-invalid' : ''}`}
+        >
+          <option value="">Selecciona un libro</option>
+          {books.map((book) => (
+            <option key={book.id} value={book.id}>
+              {book.title || book.titulo}
+            </option>
+          ))}
+        </select>
+        {errors.bookId && (
+          <div className="invalid-feedback">{errors.bookId}</div>
+        )}
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Fecha de Préstamo</label>
+        <input
+          type="date"
+          name="loanDate"
+          value={formData.loanDate}
+          onChange={handleChange}
+          className="form-control"
+          disabled={!!initialData.id}
+        />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Fecha de Devolución</label>
+        <input
+          type="date"
+          name="returnDate"
+          value={formData.returnDate}
+          onChange={handleChange}
+          className="form-control"
+        />
+      </div>
+      <button
+        type="submit"
+        className="btn btn-primary w-100 fw-bold fs-5"
+        disabled={!canSubmit}
       >
-        {users.map((user) => (
-          <MenuItem key={user.id} value={user.id}>
-            {user.name || `${user.nombre} ${user.apellido}`}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        fullWidth
-        select
-        label="Libro"
-        name="bookId"
-        value={formData.bookId}
-        onChange={handleChange}
-        error={!!errors.bookId}
-        helperText={errors.bookId}
-        margin="normal"
-      >
-        {books.map((book) => (
-          <MenuItem key={book.id} value={book.id}>
-            {book.title || book.titulo}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        fullWidth
-        type="date"
-        label="Fecha de Préstamo"
-        name="loanDate"
-        value={formData.loanDate}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-        disabled={!!initialData.id}
-      />
-      <TextField
-        fullWidth
-        type="date"
-        label="Fecha de Devolución"
-        name="returnDate"
-        value={formData.returnDate}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-      />
-      <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>
         Guardar
-      </Button>
-      {errors.message && (
-        <Typography color="error" mt={2} textAlign="center">
-          {errors.message}
-        </Typography>
+      </button>
+      {!canSubmit && (
+        <div className="text-danger mt-2 text-center">
+          No tienes permisos para realizar esta acción.
+        </div>
       )}
-    </Box>
+      {errors.message && (
+        <div className="text-danger mt-3 text-center">
+          {errors.message}
+        </div>
+      )}
+    </form>
   );
 };
 

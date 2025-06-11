@@ -1,17 +1,4 @@
 import React, { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  TablePagination,
-  TextField,
-} from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
 
 const UserTable = ({ users, onEdit, onDelete }) => {
   const [search, setSearch] = useState("");
@@ -23,7 +10,7 @@ const UserTable = ({ users, onEdit, onDelete }) => {
     setPage(0);
   };
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (newPage) => {
     setPage(newPage);
   };
 
@@ -44,57 +31,100 @@ const UserTable = ({ users, onEdit, onDelete }) => {
     page * rowsPerPage + rowsPerPage
   );
 
+  const userRole = localStorage.getItem("role");
+
+  const canEditDelete = userRole === "Gestor" || userRole === "Administrador";
+
   return (
     <>
-      <TextField
-        label="Buscar"
-        variant="outlined"
+      <input
+        type="text"
+        placeholder="Buscar por nombre, apellido o correo"
         value={search}
         onChange={handleSearchChange}
-        fullWidth
-        sx={{ marginBottom: 2 }}
+        className="form-control mb-3"
       />
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Apellido</TableCell>
-              <TableCell>Correo</TableCell>
-              <TableCell>Teléfono</TableCell>
-              <TableCell>Identificación</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      <div className="table-responsive">
+        <table className="table table-bordered table-striped align-middle">
+          <thead className="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Correo</th>
+              <th>Teléfono</th>
+              <th>Identificación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
             {paginatedUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.firstName}</TableCell>
-                <TableCell>{user.lastName}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.phone}</TableCell>
-                <TableCell>{user.idNumber}</TableCell>
-                <TableCell>
-                  <IconButton color="primary" onClick={() => onEdit(user)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton color="secondary" onClick={() => onDelete(user.id)}>
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
+              <tr key={user.id}>
+                <td>{user.firstName}</td>
+                <td>{user.lastName}</td>
+                <td>{user.email}</td>
+                <td>{user.phone}</td>
+                <td>{user.idNumber}</td>
+                <td>
+                  {canEditDelete && (
+                    <>
+                      <button
+                        onClick={() => onEdit(user)}
+                        className="btn btn-primary btn-sm me-1"
+                        title="Editar"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => onDelete(user.id)}
+                        className="btn btn-outline-danger btn-sm"
+                        title="Eliminar"
+                      >
+                        🗑️
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        component="div"
-        count={filteredUsers.length}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+          </tbody>
+        </table>
+      </div>
+      <div className="d-flex align-items-center justify-content-between mt-3">
+        <span className="fs-6">
+          Mostrando {page * rowsPerPage + 1} -{" "}
+          {Math.min((page + 1) * rowsPerPage, filteredUsers.length)} de{" "}
+          {filteredUsers.length}
+        </span>
+        <div className="d-flex align-items-center gap-2">
+          <button
+            onClick={() => setPage(Math.max(0, page - 1))}
+            disabled={page === 0}
+            className="btn btn-outline-secondary btn-sm"
+          >
+            Anterior
+          </button>
+          <span className="fs-6">Página {page + 1}</span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={(page + 1) * rowsPerPage >= filteredUsers.length}
+            className="btn btn-outline-secondary btn-sm"
+          >
+            Siguiente
+          </button>
+          <select
+            value={rowsPerPage}
+            onChange={handleChangeRowsPerPage}
+            className="form-select form-select-sm"
+            style={{ width: 120 }}
+          >
+            {[5, 10, 25, 50].map((n) => (
+              <option key={n} value={n}>
+                {n} por página
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
     </>
   );
 };

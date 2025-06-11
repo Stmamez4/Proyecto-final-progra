@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Box,
-} from "@mui/material";
 import apiClient from "../../api/apiClient";
 
 const BookTable = ({ onEdit }) => {
   const [books, setBooks] = useState([]);
+  const userRole = localStorage.getItem('role');
+  const canEditDelete = userRole === 'Gestor' || userRole === 'Administrador';
 
   const fetchBooks = async () => {
     try {
@@ -39,48 +30,47 @@ const BookTable = ({ onEdit }) => {
   }, []);
 
   return (
-    <TableContainer component={Paper} sx={{ mt: 4 }}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Título</TableCell>
-            <TableCell>Autor</TableCell>
-            <TableCell>ISBN</TableCell>
-            <TableCell>Cantidad</TableCell>
-            <TableCell>Acciones</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
+    <div className="mt-4 table-responsive">
+      <table className="table table-bordered table-striped align-middle">
+        <thead className="table-light">
+          <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>ISBN</th>
+            <th>Cantidad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
           {books.map((book) => (
-            <TableRow key={book.id}>
-              <TableCell>{book.title}</TableCell>
-              <TableCell>{book.author}</TableCell>
-              <TableCell>{book.isbn}</TableCell>
-              <TableCell>{book.quantity}</TableCell>
-              <TableCell>
-                <Box display="flex" gap={1}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={() => onEdit(book)}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    color="error"
-                    onClick={() => handleDelete(book.id)}
-                  >
-                    Eliminar
-                  </Button>
-                </Box>
-              </TableCell>
-            </TableRow>
+            <tr key={book.id}>
+              <td>{book.title}</td>
+              <td>{book.author}</td>
+              <td>{book.isbn}</td>
+              <td>{book.quantity}</td>
+              <td>
+                {canEditDelete && (
+                  <div className="d-flex gap-2">
+                    <button
+                      onClick={() => onEdit(book)}
+                      className="btn btn-primary btn-sm"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(book.id)}
+                      className="btn btn-outline-danger btn-sm"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                )}
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+        </tbody>
+      </table>
+    </div>
   );
 };
 

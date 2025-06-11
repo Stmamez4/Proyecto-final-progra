@@ -1,78 +1,64 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
+from modules.auth.utils import role_required
 from modules.models import Loan, Book, User
-from app import db
+from modules.db import db
 
 reports_blueprint = Blueprint('reports', __name__)
 
-def admin_required():
-    user = get_jwt_identity()
-    if not user or user.get('role') != 'admin':
-        return False
-    return True
-
-@reports_blueprint.route('/loans-by-book', methods=['GET'])
+@reports_blueprint.route('/reports/book/<int:book_id>', methods=['GET'])
 @jwt_required()
-def loans_by_book():
-    if not admin_required():
-        return jsonify({"error": "Acceso denegado"}), 403
-    isbn = request.args.get('isbn')
-    title = request.args.get('title')
-    query = Book.query
+@role_required(["Administrador"])
+def get_book_loans(book_id):
+    loans = Loan.query.filter_by(libro_id=book_id).all()
+    if not loans:
+        return jsonify({"error": "No hay préstamos registrados para este libro"}), 404
+    loan_data = [
+        {"loan_id": loan.id, "user_id": loan.usuario_id, "return_date": loan.fecha_devolucion, "is_active": loan.is_active}
+        for loan in loans
+    ]
+    return jsonify({"loans": loan_data}), 200
+
+@reports_blueprint.route('/reports/user/<int:user_id>', methods=['GET'])
+@jwt_required()
+@role_required(["Administrador"])
+def get_user_loans(user_id):
+    loans = Loan.query.filter_by(usuario_id=user_id).all()
+    if not loans:
+        return jsonify({"error": "No hay préstamos registrados para este usuario"}), 404
+    loan_data = [
+        {"loan_id": loan.id, "book_id": loan.libro_id, "return_date": loan.fecha_devolucion, "is_active": loan.is_active}
+        for loan in loans
+    ]
+    return jsonify({"loans": loan_data}), 200
+
+@reports_blueprint.route('/reports', methods=['GET'])
+@jwt_required()
+@role_required(["Administrador"])
+def generate_report():
+    filters = request.args
+    isbn = filters.get('isbn')
+    title = filters.get('title')
+    user_name = filters.get('user_name')
+
+    query = Loan.query.join(Book).join(User)
+
     if isbn:
-        query = query.filter(Book.isbn == isbn)
+        query = query.filter(Book.isbn.ilike(f"%{isbn}%"))
     if title:
         query = query.filter(Book.titulo.ilike(f"%{title}%"))
-    books = query.all()
-    result = []
-    for book in books:
-        loans = Loan.query.filter_by(libro_id=book.id).all()
-        result.append({
-            "book": {
-                "id": book.id,
-                "title": book.titulo,
-                "isbn": book.isbn
-            },
-            "loans": [
-                {
-                    "id": loan.id,
-                    "user_id": loan.usuario_id,
-                    "borrow_date": loan.fecha_prestamo,
-                    "return_date": loan.fecha_devolucion
-                } for loan in loans
-            ]
-        })
-    return jsonify(result), 200
+    if user_name:
+        query = query.filter((User.nombre + ' ' + User.apellido).ilike(f"%{user_name}%"))
 
-@reports_blueprint.route('/loans-by-user', methods=['GET'])
-@jwt_required()
-def loans_by_user():
-    if not admin_required():
-        return jsonify({"error": "Acceso denegado"}), 403
-    user_id = request.args.get('user_id')
-    email = request.args.get('email')
-    query = User.query
-    if user_id:
-        query = query.filter(User.id == user_id)
-    if email:
-        query = query.filter(User.correo == email)
-    users = query.all()
-    result = []
-    for user in users:
-        loans = Loan.query.filter_by(usuario_id=user.id).all()
-        result.append({
-            "user": {
-                "id": user.id,
-                "name": f"{user.nombre} {user.apellido}",
-                "email": user.correo
-            },
-            "loans": [
-                {
-                    "id": loan.id,
-                    "book_id": loan.libro_id,
-                    "borrow_date": loan.fecha_prestamo,
-                    "return_date": loan.fecha_devolucion
-                } for loan in loans
-            ]
-        })
-    return jsonify(result), 200
+    loans = query.all()
+    loan_data = [
+        {
+            "loan_id": loan.id,
+            "book_title": loan.libro.titulo,
+            "user_name": f"{loan.usuario.nombre} {loan.usuario.apellido}",
+            "return_date": loan.fecha_devolucion,
+            "is_active": loan.is_active,
+        }
+        for loan in loans
+    ]
+    return jsonify({"loans": loan_data}), 200
