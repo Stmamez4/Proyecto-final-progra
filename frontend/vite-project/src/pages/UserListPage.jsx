@@ -74,37 +74,41 @@ const UserListPage = () => {
   const userRole = localStorage.getItem('role');
   if (userRole !== 'Gestor' && userRole !== 'Administrador') {
     return (
-      <div style={{ maxWidth: 600, margin: '60px auto', padding: 32, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001', textAlign: 'center' }}>
-        <h2>Acceso denegado</h2>
-        <p>No tienes permisos para ver la gestión de usuarios.</p>
+      <div className="container d-flex flex-column align-items-center justify-content-center" style={{ maxWidth: 600, marginTop: 60 }}>
+        <div className="bg-white rounded shadow p-4 w-100 text-center">
+          <h2>Acceso denegado</h2>
+          <p>No tienes permisos para ver la gestión de usuarios.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '40px auto', padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ margin: 0 }}>Usuarios</h2>
+    <div className="container" style={{ maxWidth: 900, marginTop: 40 }}>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2 className="mb-0">Usuarios</h2>
         <button
           onClick={handleAdd}
-          style={{ padding: '8px 20px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}
+          className="btn btn-primary fw-bold"
         >
           Agregar Usuario
         </button>
       </div>
       {error && (
-        <div style={{ color: '#d32f2f', marginBottom: 16 }}>{error}</div>
+        <div className="alert alert-danger mb-3">{error}</div>
       )}
       <UserTable users={users} onEdit={handleEdit} onDelete={handleDelete} />
       {open && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#0008', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', borderRadius: 8, padding: 32, minWidth: 350, maxWidth: 400, boxShadow: '0 2px 16px #0003', position: 'relative' }}>
-            <button onClick={() => setOpen(false)} style={{ position: 'absolute', top: 8, right: 8, background: 'transparent', border: 'none', fontSize: 20, cursor: 'pointer', color: '#888' }}>×</button>
-            <h3 style={{ marginTop: 0 }}>{editingUser ? 'Editar Usuario' : 'Agregar Usuario'}</h3>
-            <UserForm
-              initialData={editingUser || {}}
-              onSubmit={handleFormSubmit}
-            />
+        <div className="modal fade show d-block" tabIndex="-1" style={{ background: '#0008' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content p-4 position-relative">
+              <button type="button" className="btn-close position-absolute end-0 top-0 m-3" aria-label="Cerrar" onClick={() => setOpen(false)}></button>
+              <h3 className="mb-3">{editingUser ? 'Editar Usuario' : 'Agregar Usuario'}</h3>
+              <UserForm
+                initialData={editingUser || {}}
+                onSubmit={handleFormSubmit}
+              />
+            </div>
           </div>
         </div>
       )}

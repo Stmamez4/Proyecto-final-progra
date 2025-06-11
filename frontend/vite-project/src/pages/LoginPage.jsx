@@ -3,7 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import apiClient from "../api/apiClient";
 import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
+import * as jwt_decode from "jwt-decode";
 
 const schema = yup.object({
   email: yup.string().email("Debe ser un correo válido").required("El correo es obligatorio"),
@@ -20,7 +20,7 @@ const LoginPage = () => {
     try {
       const response = await apiClient.post("/auth/login", data);
       localStorage.setItem("token", response.data.token);
-      const decoded = jwt_decode(response.data.token);
+      const decoded = jwt_decode.default(response.data.token);
       const userRole = decoded.role || (decoded.sub && decoded.sub.role) || (decoded.identity && decoded.identity.role);
       if (userRole) {
         localStorage.setItem("role", userRole);
@@ -32,30 +32,32 @@ const LoginPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 400, margin: '40px auto', padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001', display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Iniciar Sesión</h2>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: 'block', marginBottom: 4 }}>Correo Electrónico</label>
-        <input
-          type="email"
-          {...register("email")}
-          style={{ width: '100%', padding: 8, border: errors.email ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
-        />
-        {errors.email && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.email.message}</span>}
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: 'block', marginBottom: 4 }}>Contraseña</label>
-        <input
-          type="password"
-          {...register("password")}
-          style={{ width: '100%', padding: 8, border: errors.password ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
-        />
-        {errors.password && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.password.message}</span>}
-      </div>
-      <button type="submit" style={{ width: '100%', padding: '10px 0', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', fontSize: 16, cursor: 'pointer' }}>
-        Iniciar Sesión
-      </button>
-    </form>
+    <div className="container" style={{ maxWidth: 400, marginTop: 40 }}>
+      <form onSubmit={handleSubmit(onSubmit)} className="p-4 bg-white rounded shadow">
+        <h2 className="text-center mb-4">Iniciar Sesión</h2>
+        <div className="mb-3">
+          <label className="form-label">Correo Electrónico</label>
+          <input
+            type="email"
+            {...register("email")}
+            className={`form-control${errors.email ? " is-invalid" : ""}`}
+          />
+          {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Contraseña</label>
+          <input
+            type="password"
+            {...register("password")}
+            className={`form-control${errors.password ? " is-invalid" : ""}`}
+          />
+          {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
+        </div>
+        <button type="submit" className="btn btn-primary w-100 fw-bold fs-5">
+          Iniciar Sesión
+        </button>
+      </form>
+    </div>
   );
 };
 

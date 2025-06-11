@@ -45,112 +45,62 @@ const BookForm = ({ onSuccess, book = {} }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      style={{
-        maxWidth: 400,
-        margin: "40px auto",
-        padding: 24,
-        background: "#fff",
-        borderRadius: 8,
-        boxShadow: "0 2px 8px #0001",
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-      }}
+      className="p-4 bg-white rounded shadow"
+      style={{ maxWidth: 400, margin: '40px auto' }}
     >
-      <h3 style={{ textAlign: "center", marginBottom: 24 }}>
-        {book.id ? "Editar Libro" : "Nuevo Libro"}
-      </h3>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: "block", marginBottom: 4 }}>Título</label>
+      <h3 className="text-center mb-4">{book.id ? "Editar Libro" : "Nuevo Libro"}</h3>
+      <div className="mb-3">
+        <label className="form-label">Título</label>
         <input
           type="text"
           {...register("title")}
-          style={{
-            width: "100%",
-            padding: 8,
-            border: errors.title ? "1px solid #d32f2f" : "1px solid #ccc",
-            borderRadius: 4,
-          }}
+          className={`form-control${errors.title ? ' is-invalid' : ''}`}
         />
         {errors.title && (
-          <span style={{ color: "#d32f2f", fontSize: 13 }}>
-            {errors.title.message}
-          </span>
+          <div className="invalid-feedback">{errors.title.message}</div>
         )}
       </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: "block", marginBottom: 4 }}>Autor</label>
+      <div className="mb-3">
+        <label className="form-label">Autor</label>
         <input
           type="text"
           {...register("author")}
-          style={{
-            width: "100%",
-            padding: 8,
-            border: errors.author ? "1px solid #d32f2f" : "1px solid #ccc",
-            borderRadius: 4,
-          }}
+          className={`form-control${errors.author ? ' is-invalid' : ''}`}
         />
         {errors.author && (
-          <span style={{ color: "#d32f2f", fontSize: 13 }}>
-            {errors.author.message}
-          </span>
+          <div className="invalid-feedback">{errors.author.message}</div>
         )}
       </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: "block", marginBottom: 4 }}>ISBN</label>
+      <div className="mb-3">
+        <label className="form-label">ISBN</label>
         <input
           type="text"
           {...register("isbn")}
-          style={{
-            width: "100%",
-            padding: 8,
-            border: errors.isbn ? "1px solid #d32f2f" : "1px solid #ccc",
-            borderRadius: 4,
-          }}
+          className={`form-control${errors.isbn ? ' is-invalid' : ''}`}
         />
         {errors.isbn && (
-          <span style={{ color: "#d32f2f", fontSize: 13 }}>
-            {errors.isbn.message}
-          </span>
+          <div className="invalid-feedback">{errors.isbn.message}</div>
         )}
       </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: "block", marginBottom: 4 }}>Cantidad</label>
+      <div className="mb-3">
+        <label className="form-label">Cantidad</label>
         <input
           type="number"
           {...register("quantity")}
-          style={{
-            width: "100%",
-            padding: 8,
-            border: errors.quantity ? "1px solid #d32f2f" : "1px solid #ccc",
-            borderRadius: 4,
-          }}
+          className={`form-control${errors.quantity ? ' is-invalid' : ''}`}
         />
         {errors.quantity && (
-          <span style={{ color: "#d32f2f", fontSize: 13 }}>
-            {errors.quantity.message}
-          </span>
+          <div className="invalid-feedback">{errors.quantity.message}</div>
         )}
       </div>
       <button
         type="submit"
-        style={{
-          width: "100%",
-          padding: "10px 0",
-          background: "#1976d2",
-          color: "#fff",
-          border: "none",
-          borderRadius: 4,
-          fontWeight: "bold",
-          fontSize: 16,
-          cursor: canSubmit ? "pointer" : "not-allowed",
-          opacity: canSubmit ? 1 : 0.6,
-        }}
+        className="btn btn-primary w-100 fw-bold fs-5"
         disabled={!canSubmit}
       >
         Guardar
       </button>
-      {!canSubmit && <div style={{ color: '#d32f2f', marginTop: 8, textAlign: 'center' }}>No tienes permisos para realizar esta acción.</div>}
+      {!canSubmit && <div className="text-danger mt-2 text-center">No tienes permisos para realizar esta acción.</div>}
     </form>
   );
 };

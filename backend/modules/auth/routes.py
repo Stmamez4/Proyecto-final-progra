@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
 from werkzeug.security import check_password_hash
-from modules.models import User
+from modules.models import User, Role
 from modules.db import db
 
 auth_blueprint = Blueprint('auth', __name__)
@@ -21,3 +21,8 @@ def login():
 
     access_token = create_access_token(identity={"id": user.id, "role": user.role})
     return jsonify({"token": access_token}), 200
+
+@auth_blueprint.route('/roles', methods=['GET'])
+def get_roles():
+    roles = Role.query.all()
+    return jsonify([{"id": r.id, "name": r.nombre} for r in roles])

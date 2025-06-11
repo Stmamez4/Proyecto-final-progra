@@ -30,36 +30,36 @@ const BookTable = ({ onEdit }) => {
   }, []);
 
   return (
-    <div style={{ marginTop: 32, overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
-        <thead>
-          <tr style={{ background: '#f5f5f5' }}>
-            <th style={thStyle}>Título</th>
-            <th style={thStyle}>Autor</th>
-            <th style={thStyle}>ISBN</th>
-            <th style={thStyle}>Cantidad</th>
-            <th style={thStyle}>Acciones</th>
+    <div className="mt-4 table-responsive">
+      <table className="table table-bordered table-striped align-middle">
+        <thead className="table-light">
+          <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>ISBN</th>
+            <th>Cantidad</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {books.map((book) => (
             <tr key={book.id}>
-              <td style={tdStyle}>{book.title}</td>
-              <td style={tdStyle}>{book.author}</td>
-              <td style={tdStyle}>{book.isbn}</td>
-              <td style={tdStyle}>{book.quantity}</td>
-              <td style={tdStyle}>
+              <td>{book.title}</td>
+              <td>{book.author}</td>
+              <td>{book.isbn}</td>
+              <td>{book.quantity}</td>
+              <td>
                 {canEditDelete && (
-                  <div style={{ display: 'flex', gap: 8 }}>
+                  <div className="d-flex gap-2">
                     <button
                       onClick={() => onEdit(book)}
-                      style={{ padding: '4px 12px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                      className="btn btn-primary btn-sm"
                     >
                       Editar
                     </button>
                     <button
                       onClick={() => handleDelete(book.id)}
-                      style={{ padding: '4px 12px', background: '#fff', color: '#d32f2f', border: '1px solid #d32f2f', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                      className="btn btn-outline-danger btn-sm"
                     >
                       Eliminar
                     </button>
@@ -73,8 +73,5 @@ const BookTable = ({ onEdit }) => {
     </div>
   );
 };
-
-const thStyle = { padding: 10, borderBottom: '2px solid #eee', textAlign: 'left' };
-const tdStyle = { padding: 10, borderBottom: '1px solid #eee' };
 
 export default BookTable;

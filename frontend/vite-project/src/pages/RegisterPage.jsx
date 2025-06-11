@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import apiClient from "../api/apiClient";
+import { useEffect, useState } from "react";
 
 const schema = yup.object({
   nombre: yup.string().required("El nombre es obligatorio"),
@@ -13,9 +14,18 @@ const schema = yup.object({
 });
 
 const RegisterPage = () => {
+  const [roles, setRoles] = useState([]);
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    apiClient.get("/roles").then(res => {
+      setRoles(res.data);
+    }).catch(() => {
+      setRoles([]);
+    });
+  }, []);
 
   const onSubmit = async (data) => {
     try {
@@ -34,66 +44,73 @@ const RegisterPage = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 400, margin: '40px auto', padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001', display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Registrar Cuenta</h2>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: 'block', marginBottom: 4 }}>Nombre</label>
-        <input
-          type="text"
-          {...register("nombre")}
-          style={{ width: '100%', padding: 8, border: errors.nombre ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
-        />
-        {errors.nombre && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.nombre.message}</span>}
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: 'block', marginBottom: 4 }}>Apellido</label>
-        <input
-          type="text"
-          {...register("apellido")}
-          style={{ width: '100%', padding: 8, border: errors.apellido ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
-        />
-        {errors.apellido && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.apellido.message}</span>}
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: 'block', marginBottom: 4 }}>Correo Electrónico</label>
-        <input
-          type="email"
-          {...register("correo")}
-          style={{ width: '100%', padding: 8, border: errors.correo ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
-        />
-        {errors.correo && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.correo.message}</span>}
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: 'block', marginBottom: 4 }}>Contraseña</label>
-        <input
-          type="password"
-          {...register("password")}
-          style={{ width: '100%', padding: 8, border: errors.password ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
-        />
-        {errors.password && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.password.message}</span>}
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: 'block', marginBottom: 4 }}>Número de Identificación</label>
-        <input
-          type="text"
-          {...register("numero_identificacion")}
-          style={{ width: '100%', padding: 8, border: errors.numero_identificacion ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
-        />
-        {errors.numero_identificacion && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.numero_identificacion.message}</span>}
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ display: 'block', marginBottom: 4 }}>Rol (ID)</label>
-        <input
-          type="number"
-          {...register("rol_id")}
-          style={{ width: '100%', padding: 8, border: errors.rol_id ? '1px solid #d32f2f' : '1px solid #ccc', borderRadius: 4 }}
-        />
-        {errors.rol_id && <span style={{ color: '#d32f2f', fontSize: 13 }}>{errors.rol_id.message}</span>}
-      </div>
-      <button type="submit" style={{ width: '100%', padding: '10px 0', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 'bold', fontSize: 16, cursor: 'pointer' }}>
-        Registrar
-      </button>
-    </form>
+    <div className="container" style={{ maxWidth: 400, marginTop: 40 }}>
+      <form onSubmit={handleSubmit(onSubmit)} className="p-4 bg-white rounded shadow">
+        <h2 className="text-center mb-4">Registrar Cuenta</h2>
+        <div className="mb-3">
+          <label className="form-label">Nombre</label>
+          <input
+            type="text"
+            {...register("nombre")}
+            className={`form-control${errors.nombre ? " is-invalid" : ""}`}
+          />
+          {errors.nombre && <div className="invalid-feedback">{errors.nombre.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Apellido</label>
+          <input
+            type="text"
+            {...register("apellido")}
+            className={`form-control${errors.apellido ? " is-invalid" : ""}`}
+          />
+          {errors.apellido && <div className="invalid-feedback">{errors.apellido.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Correo Electrónico</label>
+          <input
+            type="email"
+            {...register("correo")}
+            className={`form-control${errors.correo ? " is-invalid" : ""}`}
+          />
+          {errors.correo && <div className="invalid-feedback">{errors.correo.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Contraseña</label>
+          <input
+            type="password"
+            {...register("password")}
+            className={`form-control${errors.password ? " is-invalid" : ""}`}
+          />
+          {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Número de Identificación</label>
+          <input
+            type="text"
+            {...register("numero_identificacion")}
+            className={`form-control${errors.numero_identificacion ? " is-invalid" : ""}`}
+          />
+          {errors.numero_identificacion && <div className="invalid-feedback">{errors.numero_identificacion.message}</div>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Rol</label>
+          <select
+            {...register("rol_id")}
+            className={`form-select${errors.rol_id ? " is-invalid" : ""}`}
+            defaultValue=""
+          >
+            <option value="" disabled>Selecciona un rol</option>
+            {roles.map((rol) => (
+              <option key={rol.id} value={rol.id}>{rol.name}</option>
+            ))}
+          </select>
+          {errors.rol_id && <div className="invalid-feedback">{errors.rol_id.message}</div>}
+        </div>
+        <button type="submit" className="btn btn-primary w-100 fw-bold fs-5">
+          Registrar
+        </button>
+      </form>
+    </div>
   );
 };
 

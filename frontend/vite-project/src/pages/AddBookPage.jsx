@@ -5,9 +5,11 @@ function AddBookPage({ navigateToList }) {
   const userRole = localStorage.getItem('role');
   if (userRole !== 'Gestor' && userRole !== 'Administrador') {
     return (
-      <div style={{ maxWidth: 600, margin: '60px auto', padding: 32, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001', textAlign: 'center' }}>
-        <h2>Acceso denegado</h2>
-        <p>No tienes permisos para agregar libros.</p>
+      <div className="container d-flex flex-column align-items-center justify-content-center" style={{ maxWidth: 600, marginTop: 60 }}>
+        <div className="bg-white rounded shadow p-4 w-100 text-center">
+          <h2>Acceso denegado</h2>
+          <p>No tienes permisos para agregar libros.</p>
+        </div>
       </div>
     );
   }
@@ -24,29 +26,12 @@ function AddBookPage({ navigateToList }) {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 500,
-        margin: "40px auto",
-        padding: 24,
-        background: "#fff",
-        borderRadius: 8,
-        boxShadow: "0 2px 8px #0001",
-      }}
-    >
-      <h1>Agregar Libro</h1>
+    <div className="container" style={{ maxWidth: 500, marginTop: 40 }}>
+      <h1 className="mb-4">Agregar Libro</h1>
       <BookForm onSubmit={handleAddBook} />
       <button
         onClick={navigateToList}
-        style={{
-          marginTop: 16,
-          padding: "8px 20px",
-          background: "#eee",
-          color: "#333",
-          border: "1px solid #bbb",
-          borderRadius: 4,
-          cursor: "pointer",
-        }}
+        className="btn btn-outline-secondary mt-3 fw-bold"
       >
         Volver a la lista
       </button>

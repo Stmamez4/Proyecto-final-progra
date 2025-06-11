@@ -62,45 +62,45 @@ const LoanTable = ({ onEdit }) => {
   const canEditDelete = userRole === 'Gestor' || userRole === 'Administrador';
 
   return (
-    <div style={{ marginTop: 24 }}>
+    <div className="mt-4">
       <input
         type="text"
         placeholder="Buscar por usuario o libro"
         value={search}
         onChange={handleSearchChange}
-        style={{ width: '100%', padding: 8, marginBottom: 16, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+        className="form-control mb-3"
       />
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px #0001' }}>
-          <thead>
-            <tr style={{ background: '#f5f5f5' }}>
-              <th style={thStyle}>Usuario</th>
-              <th style={thStyle}>Libro</th>
-              <th style={thStyle}>Fecha de Préstamo</th>
-              <th style={thStyle}>Fecha de Devolución</th>
-              <th style={thStyle}>Acciones</th>
+      <div className="table-responsive">
+        <table className="table table-bordered table-striped align-middle">
+          <thead className="table-light">
+            <tr>
+              <th>Usuario</th>
+              <th>Libro</th>
+              <th>Fecha de Préstamo</th>
+              <th>Fecha de Devolución</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {paginatedLoans.map((loan) => (
               <tr key={loan.id}>
-                <td style={tdStyle}>{loan.user?.name}</td>
-                <td style={tdStyle}>{loan.book?.title}</td>
-                <td style={tdStyle}>{loan.borrow_date || loan.borrowDate}</td>
-                <td style={tdStyle}>{loan.return_date || loan.returnDate || "Pendiente"}</td>
-                <td style={tdStyle}>
+                <td>{loan.user?.name}</td>
+                <td>{loan.book?.title}</td>
+                <td>{loan.borrow_date || loan.borrowDate}</td>
+                <td>{loan.return_date || loan.returnDate || "Pendiente"}</td>
+                <td>
                   {canEditDelete && (
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div className="d-flex gap-2">
                       <button
                         onClick={() => onEdit(loan)}
-                        style={{ padding: '4px 12px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                        className="btn btn-primary btn-sm"
                         title="Editar"
                       >
                         ✏️
                       </button>
                       <button
                         onClick={() => handleDelete(loan.id)}
-                        style={{ padding: '4px 12px', background: '#fff', color: '#d32f2f', border: '1px solid #d32f2f', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}
+                        className="btn btn-outline-danger btn-sm"
                         title="Eliminar"
                       >
                         🗑️
@@ -113,30 +113,31 @@ const LoanTable = ({ onEdit }) => {
           </tbody>
         </table>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16 }}>
-        <span style={{ fontSize: 15 }}>
+      <div className="d-flex align-items-center justify-content-between mt-3">
+        <span className="fs-6">
           Mostrando {page * rowsPerPage + 1} - {Math.min((page + 1) * rowsPerPage, filteredLoans.length)} de {filteredLoans.length}
         </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="d-flex align-items-center gap-2">
           <button
             onClick={() => setPage(Math.max(0, page - 1))}
             disabled={page === 0}
-            style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #ccc', background: '#eee', cursor: page === 0 ? 'not-allowed' : 'pointer' }}
+            className="btn btn-outline-secondary btn-sm"
           >
             Anterior
           </button>
-          <span style={{ fontSize: 15 }}>Página {page + 1}</span>
+          <span className="fs-6">Página {page + 1}</span>
           <button
             onClick={() => setPage(page + 1)}
             disabled={(page + 1) * rowsPerPage >= filteredLoans.length}
-            style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid #ccc', background: '#eee', cursor: (page + 1) * rowsPerPage >= filteredLoans.length ? 'not-allowed' : 'pointer' }}
+            className="btn btn-outline-secondary btn-sm"
           >
             Siguiente
           </button>
           <select
             value={rowsPerPage}
             onChange={handleChangeRowsPerPage}
-            style={{ padding: '4px 8px', borderRadius: 4, border: '1px solid #ccc', background: '#fff', fontSize: 15 }}
+            className="form-select form-select-sm"
+            style={{ width: 120 }}
           >
             {[5, 10, 25, 50].map((n) => (
               <option key={n} value={n}>{n} por página</option>
@@ -147,8 +148,5 @@ const LoanTable = ({ onEdit }) => {
     </div>
   );
 };
-
-const thStyle = { padding: 10, borderBottom: '2px solid #eee', textAlign: 'left' };
-const tdStyle = { padding: 10, borderBottom: '1px solid #eee' };
 
 export default LoanTable;

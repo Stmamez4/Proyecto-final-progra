@@ -26,31 +26,47 @@ function Navbar() {
   };
 
   return (
-    <nav style={{ background: '#343a40', padding: '0.5rem 1rem', color: '#fff' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Biblioteca</span>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Link to="/books" style={navLinkStyle}>Libros</Link>
-          {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
-            <Link to="/books/new" style={navLinkStyle}>Agregar Libro</Link>
-          )}
-          {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
-            <Link to="/users" style={navLinkStyle}>Usuarios</Link>
-          )}
-          {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
-            <Link to="/reportes" style={navLinkStyle}>Reportes</Link>
-          )}
-          {!isAuthenticated && (
-            <>
-              <Link to="/login" style={navLinkStyle}>Iniciar Sesión</Link>
-              <Link to="/register" style={navLinkStyle}>Registrarse</Link>
-            </>
-          )}
-          {isAuthenticated && (
-            <button onClick={handleLogout} style={{ ...navLinkStyle, background: 'transparent', border: 'none', cursor: 'pointer' }}>
-              Cerrar Sesión
-            </button>
-          )}
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div className="container-fluid">
+        <span className="navbar-brand fw-bold fs-5">Biblioteca</span>
+        <div className="collapse navbar-collapse">
+          <ul className="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-1">
+            <li className="nav-item">
+              <Link to="/books" className="nav-link">Libros</Link>
+            </li>
+            {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
+              <li className="nav-item">
+                <Link to="/books/new" className="nav-link">Agregar Libro</Link>
+              </li>
+            )}
+            {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
+              <li className="nav-item">
+                <Link to="/users" className="nav-link">Usuarios</Link>
+              </li>
+            )}
+            {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
+              <li className="nav-item">
+                <Link to="/reportes" className="nav-link">Reportes</Link>
+              </li>
+            )}
+            {!isAuthenticated && (
+              <>
+                <li className="nav-item">
+                  <Link to="/login" className="nav-link">Iniciar Sesión</Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/register" className="nav-link">Registrarse</Link>
+                </li>
+              </>
+            )}
+            {isAuthenticated && (
+              <li className="nav-item">
+                <button onClick={handleLogout} className="btn btn-outline-light ms-2 fw-bold px-3 py-1">
+                  Cerrar Sesión
+                </button>
+              </li>
+            )}
+          </ul>
         </div>
       </div>
     </nav>
@@ -58,12 +74,3 @@ function Navbar() {
 }
 
 export default Navbar;
-
-const navLinkStyle = {
-  color: '#fff',
-  textDecoration: 'none',
-  padding: '0.5rem 1rem',
-  borderRadius: '4px',
-  transition: 'background 0.2s',
-  fontSize: '1rem',
-};
