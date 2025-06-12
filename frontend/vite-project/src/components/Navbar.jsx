@@ -31,9 +31,12 @@ function Navbar() {
         <span className="navbar-brand fw-bold fs-5">Biblioteca</span>
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-1">
-            <li className="nav-item">
-              <Link to="/books" className="nav-link">Libros</Link>
-            </li>
+            {/* Mostrar 'Libros' solo si está autenticado */}
+            {isAuthenticated && (
+              <li className="nav-item">
+                <Link to="/books" className="nav-link">Libros</Link>
+              </li>
+            )}
             {isAuthenticated && (userRole === 'Gestor' || userRole === 'Administrador') && (
               <li className="nav-item">
                 <Link to="/books/new" className="nav-link">Agregar Libro</Link>
@@ -49,6 +52,7 @@ function Navbar() {
                 <Link to="/reportes" className="nav-link">Reportes</Link>
               </li>
             )}
+            {/* Mostrar solo si NO está autenticado */}
             {!isAuthenticated && (
               <>
                 <li className="nav-item">
@@ -59,6 +63,7 @@ function Navbar() {
                 </li>
               </>
             )}
+            {/* Mostrar solo si SÍ está autenticado */}
             {isAuthenticated && (
               <li className="nav-item">
                 <button onClick={handleLogout} className="btn btn-outline-light ms-2 fw-bold px-3 py-1">

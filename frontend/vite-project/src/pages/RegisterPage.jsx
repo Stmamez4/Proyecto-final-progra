@@ -20,7 +20,7 @@ const RegisterPage = () => {
   });
 
   useEffect(() => {
-    apiClient.get("/roles").then(res => {
+    apiClient.get("/auth/roles").then(res => {
       setRoles(res.data);
     }).catch(() => {
       setRoles([]);

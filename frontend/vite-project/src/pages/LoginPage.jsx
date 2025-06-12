@@ -3,7 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import apiClient from "../api/apiClient";
 import { useNavigate } from "react-router-dom";
-import * as jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const schema = yup.object({
   email: yup.string().email("Debe ser un correo válido").required("El correo es obligatorio"),
@@ -20,14 +20,20 @@ const LoginPage = () => {
     try {
       const response = await apiClient.post("/auth/login", data);
       localStorage.setItem("token", response.data.token);
-      const decoded = jwt_decode.default(response.data.token);
+      const decoded = jwtDecode(response.data.token);
       const userRole = decoded.role || (decoded.sub && decoded.sub.role) || (decoded.identity && decoded.identity.role);
       if (userRole) {
         localStorage.setItem("role", userRole);
       }
       navigate("/books");
     } catch (error) {
-      alert("Error al iniciar sesión: " + (error.response?.data?.error || "Error desconocido"));
+      if (error.response && error.response.data && error.response.data.error) {
+        alert("Error al iniciar sesión: " + error.response.data.error);
+      } else if (error.message) {
+        alert("Error al iniciar sesión: " + error.message);
+      } else {
+        alert("Error al iniciar sesión: error desconocido");
+      }
     }
   };
 
