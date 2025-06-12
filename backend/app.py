@@ -9,6 +9,7 @@ from modules.users.routes import users_blueprint
 from modules.loans.routes import loans_blueprint
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_cors import CORS
 
 ma = Marshmallow()
 migrate = Migrate()
@@ -16,6 +17,12 @@ jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__)
+    CORS(app,
+         origins=["http://localhost:5173"],
+         supports_credentials=True,
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         allow_headers=["Content-Type", "Authorization"]
+    )
 
     app.config.from_pyfile('config.py')
 
@@ -35,6 +42,16 @@ def create_app():
     app.register_blueprint(loans_blueprint, url_prefix='/loans')
     from modules.reports.routes import reports_blueprint
     app.register_blueprint(reports_blueprint, url_prefix='/reports')
+
+    @app.after_request
+    def after_request_func(response):
+        if request.method == 'OPTIONS':
+            response.status_code = 204
+            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+            response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+        return response
 
     return app
 

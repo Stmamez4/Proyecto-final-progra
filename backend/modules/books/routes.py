@@ -4,8 +4,10 @@ from modules.db import db
 
 books_blueprint = Blueprint('books', __name__)
 
-@books_blueprint.route('/books', methods=['GET'])
+@books_blueprint.route('/', methods=['GET', 'OPTIONS'])
 def list_books():
+    if request.method == 'OPTIONS':
+        return '', 204
     books = Book.query.all()
     books_list = [{
         "id": book.id,
@@ -16,8 +18,10 @@ def list_books():
     } for book in books]
     return jsonify(books_list), 200
 
-@books_blueprint.route('/books', methods=['POST'])
+@books_blueprint.route('/', methods=['POST', 'OPTIONS'])
 def create_book():
+    if request.method == 'OPTIONS':
+        return '', 204
     data = request.get_json()
     if not all(key in data for key in ["title", "author", "isbn", "quantity"]):
         return jsonify({"error": "Faltan campos obligatorios"}), 400
@@ -33,8 +37,10 @@ def create_book():
     db.session.commit()
     return jsonify({"message": "Libro creado exitosamente"}), 201
 
-@books_blueprint.route('/books/<int:id>', methods=['PUT'])
+@books_blueprint.route('/<int:id>', methods=['PUT', 'OPTIONS'])
 def update_book(id):
+    if request.method == 'OPTIONS':
+        return '', 204
     book = Book.query.get_or_404(id)
     data = request.get_json()
     book.titulo = data.get("title", book.titulo)
@@ -44,9 +50,24 @@ def update_book(id):
     db.session.commit()
     return jsonify({"message": "Libro actualizado exitosamente"}), 200
 
-@books_blueprint.route('/books/<int:id>', methods=['DELETE'])
+@books_blueprint.route('/<int:id>', methods=['DELETE', 'OPTIONS'])
 def delete_book(id):
+    if request.method == 'OPTIONS':
+        return '', 204
     book = Book.query.get_or_404(id)
     db.session.delete(book)
     db.session.commit()
     return jsonify({"message": "Libro eliminado exitosamente"}), 200
+
+@books_blueprint.route('/<int:id>', methods=['GET', 'OPTIONS'])
+def get_book(id):
+    if request.method == 'OPTIONS':
+        return '', 204
+    book = Book.query.get_or_404(id)
+    return jsonify({
+        "id": book.id,
+        "title": book.titulo,
+        "author": book.autor,
+        "isbn": book.isbn,
+        "quantity": book.cantidad_disponible
+    }), 200
