@@ -15,11 +15,10 @@ def login():
     if not email or not password:
         return jsonify({"error": "Email y contraseña son obligatorios"}), 400
 
-    user = User.query.filter_by(correo=email).first()  # <--- CAMBIO: correo
-    if not user or user.contrasena != password:  # <--- CAMBIO: sin hash
+    user = User.query.filter_by(correo=email).first()
+    if not user or user.contrasena != password:
         return jsonify({"error": "Credenciales inválidas"}), 401
 
-    # Cambiar: poner el nombre del rol en el JWT
     access_token = create_access_token(identity={"id": user.id, "role": user.rol.nombre})
     return jsonify({"token": access_token}), 200
 

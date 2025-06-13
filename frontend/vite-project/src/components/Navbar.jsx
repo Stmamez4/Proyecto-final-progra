@@ -31,7 +31,6 @@ function Navbar() {
         <span className="navbar-brand fw-bold fs-5">Biblioteca</span>
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-1">
-            {/* Mostrar 'Libros' solo si está autenticado */}
             {isAuthenticated && (
               <li className="nav-item">
                 <Link to="/books" className="nav-link">Libros</Link>
@@ -52,7 +51,6 @@ function Navbar() {
                 <Link to="/reportes" className="nav-link">Reportes</Link>
               </li>
             )}
-            {/* Mostrar solo si NO está autenticado */}
             {!isAuthenticated && (
               <>
                 <li className="nav-item">

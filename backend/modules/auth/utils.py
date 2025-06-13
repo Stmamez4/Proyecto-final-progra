@@ -8,10 +8,8 @@ def role_required(roles):
         @wraps(fn)
         def wrapper(*args, **kwargs):
             identity = get_jwt_identity()
-            # identity debe ser un dict: {"id": ..., "role": ...}
             user_id = identity.get("id") if isinstance(identity, dict) else identity
             user = User.query.get(user_id)
-            # Obtener el nombre del rol desde la relación
             user_role = user.rol.nombre if user and user.rol else None
             if not user or user_role not in roles:
                 return jsonify({'error': 'No autorizado'}), 403
